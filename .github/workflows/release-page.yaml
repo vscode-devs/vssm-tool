@@ -1,0 +1,134 @@
+name: Release Page Creator
+
+on:
+  workflow_run:
+    workflows: ['Publish Package to npmjs']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: '标签名 (例如 v1.0.0)'
+        required: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # 只有当上游工作流包含发布动作时才运行
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      (github.event.workflow_run.conclusion == 'success' && 
+       contains(github.event.workflow_run.head_commit.message, '[publish]'))
+    steps:
+      # 步骤 1: 检出代码库
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 步骤 2: 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      # 步骤 3: 生成北京时间 (UTC+8)
+      - name: 获取当前北京时间
+        id: beijing_time
+        run: |
+          # 设置时区为上海（北京时间）
+          TZ='Asia/Shanghai'
+          # 生成 ISO 8601 格式的北京时间（带时区）
+          BEIJING_TIME=$(date +"%Y-%m-%dT%H:%M:%S%z")
+          # 调整格式为 YYYY-MM-DDTHH:MM:SS+0800
+          BEIJING_TIME=${BEIJING_TIME:0:22}+0800
+
+          echo "北京时间为: $BEIJING_TIME"
+          echo "release_date=$BEIJING_TIME" >> $GITHUB_OUTPUT
+
+      # 步骤 4: 解析标签名
+      - name: 解析标签名
+        id: resolve_tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            TAG_NAME="${{ github.event.inputs.tag_name }}"
+          else
+            LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+            if [ -z "$LATEST_TAG" ]; then
+              echo "::错误::未找到任何Git标签!"
+              exit 1
+            fi
+            TAG_NAME="$LATEST_TAG"
+          fi
+          echo "使用标签: $TAG_NAME"
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      # 步骤 5: 获取 package.json 版本
+      - name: 获取包版本
+        id: package_version
+        run: |
+          if [ ! -f "package.json" ]; then
+            echo "::错误::未找到package.json文件!"
+            exit 1
+          fi
+          VERSION=$(node -p "require('./package.json').version")
+          PKG_TAG="v$VERSION"
+          echo "包版本: $VERSION"
+          echo "package_tag=$PKG_TAG" >> $GITHUB_OUTPUT
+
+      # 步骤 6: 验证一致性
+      - name: 验证标签一致性
+        id: validate_tag
+        run: |
+          if [[ "${{ steps.resolve_tag.outputs.tag_name }}" != "${{ steps.package_version.outputs.package_tag }}" ]]; then
+            echo "::错误::版本不匹配! Git标签(${{ steps.resolve_tag.outputs.tag_name }}) ≠ package.json版本(v$VERSION)"
+            exit 1
+          fi
+
+          if [[ "${{ steps.resolve_tag.outputs.tag_name }}" == v* ]]; then
+            TAG_FORMAT="✅ 有效"
+          else
+            TAG_FORMAT="⚠️ 无效"
+          fi
+
+          echo "标签格式: $TAG_FORMAT"
+          echo "tag_format=$TAG_FORMAT" >> $GITHUB_OUTPUT
+          echo "✅ 验证通过!"
+
+      # 步骤 7: 创建 GitHub Release
+      - name: 创建GitHub Release
+        uses: softprops/action-gh-release@v2.3.2
+        with:
+          tag_name: ${{ steps.resolve_tag.outputs.tag_name }}
+          name: 发布 ${{ steps.resolve_tag.outputs.tag_name }}
+          body: |
+            ## 版本 ${{ steps.resolve_tag.outputs.tag_name }}
+
+            ### 验证摘要
+            | 检查项 | 结果 |
+            |-------|--------|
+            | Git标签 vs package.json | ✅ **匹配** |
+            | Git标签格式 | ${{ steps.validate_tag.outputs.tag_format }} |
+
+            ### 详细信息
+            - **包版本:** ${{ steps.package_version.outputs.package_tag }}
+            - **发布日期:** ${{ steps.beijing_time.outputs.release_date }} (北京时间)
+
+            **触发来源:**  
+            ${{ github.event_name }} (工作流运行: #${{ github.run_number }})
+
+            **提交信息:**  
+            > ${{ github.event.workflow_run.head_commit.message || '无提交信息可用' }}
+
+            **自动生成说明:**  
+            此版本基于已验证的Git标签自动生成。
+          files: |
+            bin
+            dist
+            scaffolds
+            .editorconfig
+            package.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

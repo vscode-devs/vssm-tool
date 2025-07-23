@@ -1,0 +1,84 @@
+# .github/workflows/npm-publish.yml
+
+name: Publish Package to npmjs
+
+on:
+  push:
+    branches:
+      - master # 仅在 master 分支的推送时触发
+    tags:
+      - 'v*' # 避免标签推送循环触发
+  workflow_dispatch: # 允许从 GitHub Actions 页面手动触发
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 需要写权限创建标签
+      id-token: write # npm 发布需要 OIDC 令牌
+
+    # 条件：仅当提交消息包含 [publish] 时才运行
+    if: contains(github.event.head_commit.message, '[publish]')
+    steps:
+      # 步骤 1: 检出代码库
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整提交历史（需要访问历史标签）
+          persist-credentials: true # 保留凭证用于后续推送
+
+      - name: 打印相关路径
+        run: | # | 为 yaml 的特定符号，其下可以使用多行文字。
+          echo "当前路径为 $(pwd)"
+          echo "工作路径为 ${{ github.workspace }}"
+          echo "HOME路径为 $HOME"
+
+      # 步骤 2: 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # 使用最新的 LTS 版本
+          registry-url: 'https://registry.npmjs.org' # 设置 npm 注册表
+          cache: 'npm' # 缓存 npm 依赖提升后续运行速度
+      
+      # 步骤 3: 安装 vsce 和更新 npm
+      # 步骤 3.1: 更新 npm 到最新版本
+      - name: Update npm
+        run: npm install -g npm
+
+      # 步骤 3.2: 安装 vsce
+      - name: Install vsce
+        run: npm install -g vsce
+
+      # 步骤 4: 安装项目依赖
+      - name: Install dependencies
+        run: npm ci # 使用 package-lock.json 确保精确安装
+
+      # 步骤 5: 构建项目
+      - name: Build package # 编译打包生产环境代码
+        run: echo "not need to build" # npm run bin:b
+
+      # 步骤 6: 发布到 vscode插件市场
+      - name: Publish to Visual Studio Code Marketplace
+        run: vsce publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      # 步骤 7: 创建并推送版本标签
+      - name: Create and push version tag
+        run: |
+          # 从 package.json 获取版本号
+          VERSION=$(node -p "require('./package.json').version")
+          TAG_NAME="v$VERSION"  # 构造标签名 (v + 版本号)
+
+          # 配置 Git 用户信息 (使用 GitHub Actions 机器用户)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 创建带注释的标签
+          git tag -a $TAG_NAME -m "Release $TAG_NAME"
+
+          # 推送标签到远程仓库
+          git push origin $TAG_NAME
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub 自动生成的 token

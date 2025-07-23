@@ -26,7 +26,15 @@
           "when": "editorTextFocus"
         }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "vssm-tool.helloWorld",
+        "key": "ctrl+alt+f10",
+        "mac": "cmd+alt+f10",
+        "when": "editorTextFocus"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

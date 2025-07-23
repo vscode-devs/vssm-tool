@@ -2,7 +2,10 @@
   "name": "vssm-tool",
   "displayName": "vssm-tool",
   "description": "苏木的vscode扩展小工具",
-  "version": "0.0.1",
+  "keywords": ["vscode", "plugin", "demo"],
+  "publisher": "ms-vs-extensions",
+  "version": "0.0.2",
+  "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.102.0"
   },

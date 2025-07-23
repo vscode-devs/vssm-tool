@@ -17,7 +17,16 @@
         "command": "vssm-tool.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vssm-tool.helloWorld",
+          "group": "navigation",
+          "when": "editorTextFocus"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

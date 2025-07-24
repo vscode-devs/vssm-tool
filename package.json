@@ -32,6 +32,21 @@
         "title": "generate .editorconfig here"
       }
     ],
+    "configuration": {
+      "title": "GenerateEditorConfig",
+      "properties": {
+        "generateEditorConfig.generateAuto": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically generates an .editorconfig file according to your current editor settings."
+        },
+        "generateEditorConfig.template": {
+          "type": "string",
+          "default": "default",
+          "description": "If generateAuto is false, this template path will be used for each newly-generated .editorconfig file."
+        }
+      }
+    },
     "submenus": [
       {
         "id": "vssm-tool.menu",

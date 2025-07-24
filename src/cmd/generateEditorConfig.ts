@@ -61,10 +61,9 @@ async function generateEditorConfig(uri: Uri) {
    * @description 根据配置生成或使用模板创建.editorconfig文件
    */
   async function writeFile() {
-    // 获取editorconfig相关配置
-    const ec = workspace.getConfiguration('editorconfig');
-    // 强制使用模板模式进行测试
-    const generateAuto = false;
+    // 获取 generateEditorConfig 相关配置,package.json中
+    const ec = workspace.getConfiguration('generateEditorConfig');
+		const generateAuto = !!ec.get<boolean>('generateAuto');
 
     if (!generateAuto) {
       // 获取模板配置，默认为'default'

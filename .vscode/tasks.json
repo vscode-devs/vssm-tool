@@ -11,6 +11,15 @@
 			"presentation": {
 				"reveal": "never"
 			},
+			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "postbuild",
+			"problemMatcher": "$tsc-watch",
+			"presentation": {
+				"reveal": "never"
+			},
 			"group": {
 				"kind": "build",
 				"isDefault": true

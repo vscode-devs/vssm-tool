@@ -43,6 +43,12 @@
           "when": "editorTextFocus"
         }
       ],
+      "explorer/context": [
+        {
+          "submenu": "vssm-tool.menu",
+          "group": "navigation"
+        }
+      ],
       "vssm-tool.menu": [
         {
           "command": "vssm-tool.helloWorld",

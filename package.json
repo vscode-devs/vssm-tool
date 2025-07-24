@@ -102,7 +102,7 @@
     "vscode:prepublish": "npm run compile && npm run postbuild",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "postbuild": "shx cp -f src/DefaultTemplate.editorconfig out",
+    "postbuild": "shx mkdir -p out && shx cp -f src/DefaultTemplate.editorconfig out/",
     "clean": "shx rm -rf out",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",

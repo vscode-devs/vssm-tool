@@ -26,6 +26,10 @@
       {
         "command": "vssm-tool.getCursorPosition",
         "title": "获取光标位置"
+      },
+      {
+        "command": "vssm-tool.generateEditorConfig",
+        "title": "generate .editorconfig here"
       }
     ],
     "submenus": [
@@ -57,6 +61,11 @@
         {
           "command": "vssm-tool.getCursorPosition",
           "group": "2_commands"
+        },
+        {
+          "command": "vssm-tool.generateEditorConfig",
+          "group": "3_commands",
+          "when": "explorerResourceIsFolder"
         }
       ]
     },

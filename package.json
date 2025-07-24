@@ -44,6 +44,11 @@
           "type": "string",
           "default": "default",
           "description": "If generateAuto is false, this template path will be used for each newly-generated .editorconfig file."
+        },
+        "generateEditorConfig.customTemplatePath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom template file path. If specified and exists, will be used instead of the template setting."
         }
       }
     },

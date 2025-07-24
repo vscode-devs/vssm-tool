@@ -66,6 +66,8 @@ async function generateEditorConfig(uri: Uri) {
 		const generateAuto = !!ec.get<boolean>('generateAuto');
 
     if (!generateAuto) {
+      // 获取自定义模板路径配置
+      const customTemplatePath = ec.get<string>('customTemplatePath');
       // 获取模板配置，默认为'default'
       const template = ec.get<string>('template') || 'default';
       // 解析默认模板路径
@@ -77,8 +79,20 @@ async function generateEditorConfig(uri: Uri) {
 
       let templateBuffer: Buffer;
       try {
-        // 根据模板配置决定使用默认模板还是自定义模板
-        const templatePath = /^default$/i.test(template) ? defaultTemplatePath : template;
+        // 优先检查自定义模板路径是否存在
+        let templatePath = defaultTemplatePath;
+        if (customTemplatePath) {
+          try {
+            await readFile(customTemplatePath);
+            templatePath = customTemplatePath;
+          } catch {
+            // 自定义模板不存在，回退到模板配置
+            templatePath = /^default$/i.test(template) ? defaultTemplatePath : template;
+          }
+        } else {
+          // 没有自定义模板配置，使用模板配置
+          templatePath = /^default$/i.test(template) ? defaultTemplatePath : template;
+        }
         // 读取模板文件内容
         templateBuffer = await readFile(templatePath);
       } catch (error) {

@@ -94,9 +94,11 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run compile && npm run postbuild",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "postbuild": "shx cp -f src/DefaultTemplate.editorconfig out",
+    "clean": "shx rm -rf out",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
@@ -115,6 +117,7 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.25.1",
+    "shx": "^0.3.4",
     "typescript": "^5.8.3"
   }
 }

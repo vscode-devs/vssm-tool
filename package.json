@@ -25,12 +25,25 @@
         "title": "Hello World"
       }
     ],
+    "submenus": [
+      {
+        "id": "vssm-tool.menu",
+        "label": "VSSM Tool",
+        "icon": "$(extensions)"
+      }
+    ],
     "menus": {
       "editor/context": [
         {
-          "command": "vssm-tool.helloWorld",
+          "submenu": "vssm-tool.menu",
           "group": "navigation",
           "when": "editorTextFocus"
+        }
+      ],
+      "vssm-tool.menu": [
+        {
+          "command": "vssm-tool.helloWorld",
+          "group": "1_commands"
         }
       ]
     },

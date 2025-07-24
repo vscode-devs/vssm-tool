@@ -48,7 +48,7 @@ jobs:
 
       # 步骤 3.2: 安装 vsce
       - name: Install vsce
-        run: npm install -g vsce
+        run: npm install -g @vscode/vsce
 
       # 步骤 4: 安装项目依赖
       - name: Install dependencies

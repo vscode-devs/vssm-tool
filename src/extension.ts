@@ -5,6 +5,7 @@ import { registerHelloWorldCommand } from './cmd/helloworld';
 import { registerCursorPositionCommand } from './cmd/cursor-position';
 import { registerGenerateEditorConfigCommand } from './cmd/generateEditorConfig';
 import { registerGenerateWorkspaceConfigCommand } from './cmd/generateWorkspaceConfig';
+import { registerGenerateClangFormatCommand } from './cmd/generateClangFormat';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -19,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerCursorPositionCommand(context);
   registerGenerateEditorConfigCommand(context);
   registerGenerateWorkspaceConfigCommand(context);
+  registerGenerateClangFormatCommand(context);
 }
 
 // This method is called when your extension is deactivated

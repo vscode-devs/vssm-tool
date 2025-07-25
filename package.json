@@ -34,6 +34,10 @@
       {
         "command": "vssm-tool.generateWorkspaceConfig",
         "title": "generate workspace config here"
+      },
+      {
+        "command": "vssm-tool.generateClangFormat",
+        "title": "generate .clang-format here"
       }
     ],
     "configuration": {
@@ -60,6 +64,16 @@
           "description": "Template path used for each newly-generated .code-workspace file."
         },
         "generateWorkspaceConfig.customTemplatePath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom template file path. If specified and exists, will be used instead of the template setting."
+        },
+        "generateClangFormat.template": {
+          "type": "string",
+          "default": "default",
+          "description": "Template path used for each newly-generated .clang-format file."
+        },
+        "generateClangFormat.customTemplatePath": {
           "type": "string",
           "default": "",
           "description": "Custom template file path. If specified and exists, will be used instead of the template setting."
@@ -104,6 +118,11 @@
         {
           "command": "vssm-tool.generateWorkspaceConfig",
           "group": "3_commands@2",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "vssm-tool.generateClangFormat",
+          "group": "3_commands@3",
           "when": "explorerResourceIsFolder"
         }
       ]

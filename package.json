@@ -30,6 +30,10 @@
       {
         "command": "vssm-tool.generateEditorConfig",
         "title": "generate .editorconfig here"
+      },
+      {
+        "command": "vssm-tool.generateWorkspaceConfig",
+        "title": "generate workspace config here"
       }
     ],
     "configuration": {
@@ -46,6 +50,16 @@
           "description": "If generateAuto is false, this template path will be used for each newly-generated .editorconfig file."
         },
         "generateEditorConfig.customTemplatePath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom template file path. If specified and exists, will be used instead of the template setting."
+        },
+        "generateWorkspaceConfig.template": {
+          "type": "string",
+          "default": "default",
+          "description": "Template path used for each newly-generated .code-workspace file."
+        },
+        "generateWorkspaceConfig.customTemplatePath": {
           "type": "string",
           "default": "",
           "description": "Custom template file path. If specified and exists, will be used instead of the template setting."
@@ -84,7 +98,12 @@
         },
         {
           "command": "vssm-tool.generateEditorConfig",
-          "group": "3_commands",
+          "group": "3_commands@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "vssm-tool.generateWorkspaceConfig",
+          "group": "3_commands@2",
           "when": "explorerResourceIsFolder"
         }
       ]
@@ -102,7 +121,7 @@
     "vscode:prepublish": "npm run compile && npm run postbuild",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "postbuild": "shx mkdir -p out && shx cp -f src/DefaultTemplate.editorconfig out/",
+    "postbuild": "shx mkdir -p out && shx cp -f src/DefaultTemplate.* out/",
     "clean": "shx rm -rf out",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",

@@ -23,3 +23,7 @@ indent_size = 2
 [*.{html, css, styl, njk}]
 indent_style = space
 indent_size = 2
+
+[*.code-workspace]
+indent_style = space
+indent_size = 2

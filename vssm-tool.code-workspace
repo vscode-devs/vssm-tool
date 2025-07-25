@@ -1,0 +1,26 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  // 工作区的配置
+  // vscode配置文件优先级：用户设置 < 远程设置 < 工作区设置 < 文件夹设置
+  // 对于缩进配置的优先级：用户设置 < 远程设置 < 工作区设置 < 文件夹设置 < .editorconfig
+  "settings": {
+    "editor.tabSize": 4,
+    "typescript.tsc.autoDetect": "off",
+    // 搜索时不想显示的文件可按以下格式屏蔽(为 true 时屏蔽)
+    "search.exclude": {
+      "**/*.o": true,
+      "**/*.su": true,
+      "**/*.cmd": true,
+    },
+    // 不想在工作区显示的文件可按以下格式屏蔽(为 true 时屏蔽)
+    "files.exclude": {
+      "**/*.o": true,
+      "**/*.su": true,
+      "**/*.cmd": true,
+    },
+  },
+}

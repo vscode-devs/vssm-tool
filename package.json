@@ -13,6 +13,9 @@
   "engines": {
     "vscode": "^1.98.0"
   },
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
   "categories": [
     "Other"
   ],

@@ -25,7 +25,7 @@
       },
       {
         "command": "vssm-tool.getCursorPosition",
-        "title": "获取光标位置"
+        "title": "get cursor position"
       },
       {
         "command": "vssm-tool.generateEditorConfig",
@@ -41,8 +41,18 @@
       }
     ],
     "configuration": {
-      "title": "GenerateEditorConfig",
+      "title": "VSSM-Tool",
       "properties": {
+        "getCursorPosition.showMenuEntry": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the 'get cursor position' entry in the context menu of the Explorer view."
+        },
+        "helloWorld.showMenuEntry": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the 'Hello World' entry in the context menu of the Explorer view."
+        },
         "generateEditorConfig.generateAuto": {
           "type": "boolean",
           "default": false,
@@ -104,11 +114,13 @@
       "vssm-tool.menu": [
         {
           "command": "vssm-tool.helloWorld",
-          "group": "1_commands"
+          "group": "1_commands",
+          "when": "config.helloWorld.showMenuEntry"
         },
         {
           "command": "vssm-tool.getCursorPosition",
-          "group": "2_commands"
+          "group": "2_commands",
+          "when": "config.getCursorPosition.showMenuEntry"
         },
         {
           "command": "vssm-tool.generateEditorConfig",

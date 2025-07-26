@@ -6,6 +6,7 @@ import { registerCursorPositionCommand } from './cmd/cursor-position';
 import { registerGenerateEditorConfigCommand } from './cmd/generateEditorConfig';
 import { registerGenerateWorkspaceConfigCommand } from './cmd/generateWorkspaceConfig';
 import { registerGenerateClangFormatCommand } from './cmd/generateClangFormat';
+import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
 // import { registerMarkdownHoverProvider } from './language-features/markdownHover';
 
 // This method is called when your extension is activated
@@ -22,6 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerGenerateEditorConfigCommand(context);
   registerGenerateWorkspaceConfigCommand(context);
   registerGenerateClangFormatCommand(context);
+  registerNpmRunTaskCommand(context);
   // registerMarkdownHoverProvider(context); // 这里不注册，暂不使用这个功能
 }
 

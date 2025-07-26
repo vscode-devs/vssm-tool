@@ -9,8 +9,26 @@
 
 [![document](https://badgen.net/static/Document/site-docsify/cyan)](https://docs-site.github.io/site-docsify/)&nbsp;&nbsp;&nbsp;&nbsp;[![vscode-doc-cn](https://badgen.net/static/Document/vscode-doc-cn/cyan)](https://vscode.js.cn/docs)&nbsp;&nbsp;&nbsp;&nbsp;[![vscode-doc-en](https://badgen.net/static/Document/vscode-doc-cn/cyan)](https://code.visualstudio.com/docs)&nbsp;&nbsp;&nbsp;&nbsp;[![VS-Code-Extension-Doc-ZH](https://badgen.net/static/Document/VS-Code-Extension-Doc-ZH/cyan)](https://liiked.github.io/VS-Code-Extension-Doc-ZH/)
 
+# 二、扩展配置
 
-# 二、小徽章
+```json
+
+"generateClangFormat.customTemplatePath": ""     // .clang-format 自定义模板文件路径
+
+"generateEditorConfig.customTemplatePath": ""    // .editconfig 自定义模板文件路径
+"generateEditorConfig.generateAuto": false
+
+"generateWorkspaceConfig.customTemplatePath": "" // .code-workspace 自定义模板文件路径
+
+"getCursorPosition.showMenuEntry": true
+"helloWorld.showMenuEntry": true
+
+"vssm-tool.npmTaskSource": "package.json"
+```
+
+
+
+# 三、小徽章
 
 >- [badgen.net](https://badgen.net/)
 >- [Shields.io | Shields.io](https://shields.io/)

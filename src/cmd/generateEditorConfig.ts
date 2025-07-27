@@ -226,12 +226,15 @@ async function generateEditorConfig(uri: Uri) {
 /**
  * @brief 注册生成.editorconfig文件的命令
  * @param context VSCode扩展上下文
+ * @returns 返回注册的命令名称
  */
-export function registerGenerateEditorConfigCommand(context: vscode.ExtensionContext) {
+export function registerGenerateEditorConfigCommand(context: vscode.ExtensionContext): string {
+  const commandName = 'vssm-tool.generateEditorConfig';
   // 注册命令
-  const command = vscode.commands.registerCommand('vssm-tool.generateEditorConfig', (uri: Uri) => {
+  const command = vscode.commands.registerCommand(commandName, (uri: Uri) => {
     generateEditorConfig(uri);
   });
   // 将命令添加到订阅列表
   context.subscriptions.push(command);
+  return commandName;
 }

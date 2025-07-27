@@ -43,11 +43,14 @@ function handleGetCursorPosition() {
 /**
  * @brief 注册获取光标位置命令
  * @param context VS Code扩展上下文对象
+ * @returns 返回注册的命令名称
  */
-export function registerCursorPositionCommand(context: vscode.ExtensionContext) {
+export function registerCursorPositionCommand(context: vscode.ExtensionContext): string {
+    const commandName = 'vssm-tool.getCursorPosition';
     const disposable = vscode.commands.registerCommand(
-        'vssm-tool.getCursorPosition',
+        commandName,
         handleGetCursorPosition
     );
     context.subscriptions.push(disposable);
+    return commandName;
 }

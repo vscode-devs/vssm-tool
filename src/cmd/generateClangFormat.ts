@@ -131,12 +131,15 @@ async function generateClangFormat(uri: Uri) {
 /**
  * @brief 注册生成.clang-format文件的命令
  * @param context VSCode扩展上下文
+ * @returns 返回注册的命令名称
  */
-export function registerGenerateClangFormatCommand(context: vscode.ExtensionContext) {
+export function registerGenerateClangFormatCommand(context: vscode.ExtensionContext): string {
+  const commandName = 'vssm-tool.generateClangFormat';
   // 注册命令
-  const command = vscode.commands.registerCommand('vssm-tool.generateClangFormat', (uri: Uri) => {
+  const command = vscode.commands.registerCommand(commandName, (uri: Uri) => {
     generateClangFormat(uri);
   });
   // 将命令添加到订阅列表
   context.subscriptions.push(command);
+  return commandName;
 }

@@ -7,24 +7,89 @@ import { registerGenerateEditorConfigCommand } from './cmd/generateEditorConfig'
 import { registerGenerateWorkspaceConfigCommand } from './cmd/generateWorkspaceConfig';
 import { registerGenerateClangFormatCommand } from './cmd/generateClangFormat';
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
-// import { registerMarkdownHoverProvider } from './language-features/markdownHover';
+import { registerMarkdownHoverProvider } from './language-features/markdownHover';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const registeredCommands = new Set<string>();
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "vssm-tool" is now active!');
 
-  // Register commands
-  registerHelloWorldCommand(context);
-  registerCursorPositionCommand(context);
-  registerGenerateEditorConfigCommand(context);
-  registerGenerateWorkspaceConfigCommand(context);
-  registerGenerateClangFormatCommand(context);
-  registerNpmRunTaskCommand(context);
-  // registerMarkdownHoverProvider(context); // 这里不注册，暂不使用这个功能
+  // Define all commands with their registration functions and enabled status
+  const commands = {
+    helloWorld: {
+      register: registerHelloWorldCommand,
+      enabled: true
+    },
+    cursorPosition: {
+      register: registerCursorPositionCommand,
+      enabled: true
+    },
+    generateEditorConfig: {
+      register: registerGenerateEditorConfigCommand,
+      enabled: true
+    },
+    generateWorkspaceConfig: {
+      register: registerGenerateWorkspaceConfigCommand,
+      enabled: true
+    },
+    generateClangFormat: {
+      register: registerGenerateClangFormatCommand,
+      enabled: true
+    },
+    npmRunTask: {
+      register: registerNpmRunTaskCommand,
+      enabled: true
+    },
+    markdownHover: {
+      register: registerMarkdownHoverProvider,
+      enabled: false // 暂不启用Markdown Hover功能
+    }
+  };
+
+  // Register commands with duplicate prevention
+  const registrationResults = {
+    success: 0,
+    skipped: 0,
+    failed: 0
+  };
+
+  function tryRegister(name: string, registerFn: (ctx: vscode.ExtensionContext) => string | boolean): void {
+    if (registeredCommands.has(name)) {
+      console.warn(`Command "${name}" already registered, skipping`);
+      registrationResults.skipped++;
+      return;
+    }
+
+    const result = registerFn(context);
+    const commandName = typeof result === 'string' ? result : name;
+
+    if (result) {
+      registeredCommands.add(commandName);
+      registrationResults.success++;
+    } else {
+      registrationResults.failed++;
+    }
+  }
+
+  // Register all enabled commands
+  for (const [name, { register, enabled }] of Object.entries(commands)) {
+    if (enabled) {
+      tryRegister(name, register);
+    }
+    else {
+      // console.warn(`Command "${name}" is disabled, skipping registration`);
+      registrationResults.skipped++;
+    }
+  }
+
+  console.log(`Command registration results: 
+    Success: ${registrationResults.success}, 
+    Skipped: ${registrationResults.skipped}, 
+    Failed: ${registrationResults.failed}`);
 }
 
 // This method is called when your extension is deactivated

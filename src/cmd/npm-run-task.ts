@@ -230,12 +230,13 @@ async function showNpmTasks() {
  * @details 创建状态栏按钮并注册命令，按钮位于状态栏左侧最后位置，
  *          点击按钮将触发showNpmTasks函数
  * @param {vscode.ExtensionContext} context VS Code扩展上下文对象
- * @returns {void}
+ * @returns {string} 返回注册的命令名称
  * @example
  * // 注册示例
  * registerNpmRunTaskCommand(context);
  */
-export function registerNpmRunTaskCommand(context: vscode.ExtensionContext) {
+export function registerNpmRunTaskCommand(context: vscode.ExtensionContext): string {
+  const commandName = 'vssm-tool.runNpmTask';
   // 创建状态栏按钮
   // 对齐方式: 左侧
   // 优先级: 1 (放在左侧最后)
@@ -246,13 +247,13 @@ export function registerNpmRunTaskCommand(context: vscode.ExtensionContext) {
   // 设置悬停提示
   statusBarItem.tooltip = 'Click to run npm tasks/scripts';  // 鼠标悬停时显示的提示
   // 设置点击命令
-  statusBarItem.command = 'vssm-tool.runNpmTask';  // 点击时执行的命令ID
+  statusBarItem.command = commandName;  // 点击时执行的命令ID
   // 显示按钮
   statusBarItem.show();  // 在状态栏显示按钮
 
   // 注册命令处理函数
   const disposable = vscode.commands.registerCommand(
-    'vssm-tool.runNpmTask',  // 命令ID
+    commandName,  // 命令ID
     showNpmTasks  // 命令处理函数
   );
 
@@ -262,4 +263,5 @@ export function registerNpmRunTaskCommand(context: vscode.ExtensionContext) {
     disposable,  // 命令注册
     statusBarItem  // 状态栏按钮
   );
+  return commandName;
 }

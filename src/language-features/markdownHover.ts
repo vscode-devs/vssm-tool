@@ -61,10 +61,12 @@ export class MarkdownHoverProvider implements vscode.HoverProvider {
  * @param context VSCode扩展上下文
  */
 export function registerMarkdownHoverProvider(context: vscode.ExtensionContext) {
+    const providerName = 'markdownHover';
     // 创建悬停提供者实例
     const provider = new MarkdownHoverProvider();
     // 注册到Markdown语言
     context.subscriptions.push(
         vscode.languages.registerHoverProvider('markdown', provider)
     );
+    return providerName;
 }

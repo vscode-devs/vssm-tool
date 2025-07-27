@@ -137,13 +137,16 @@ async function generateWorkspaceConfig(uri: Uri) {
  * @brief 注册生成工作区配置文件的命令
  * @description 注册VSCode命令'vssm-tool.generateWorkspaceConfig'
  * @param {vscode.ExtensionContext} context - VSCode扩展上下文，用于管理命令的生命周期
+ * @returns {string} 返回注册的命令名称
  */
-export function registerGenerateWorkspaceConfigCommand(context: vscode.ExtensionContext) {
+export function registerGenerateWorkspaceConfigCommand(context: vscode.ExtensionContext): string {
+  const commandName = 'vssm-tool.generateWorkspaceConfig';
   // 注册命令并绑定到generateWorkspaceConfig函数
-  const command = vscode.commands.registerCommand('vssm-tool.generateWorkspaceConfig', (uri: Uri) => {
+  const command = vscode.commands.registerCommand(commandName, (uri: Uri) => {
     generateWorkspaceConfig(uri);
   });
 
   // 将命令添加到扩展上下文的订阅中，确保扩展卸载时命令被清理
   context.subscriptions.push(command);
+  return commandName;
 }

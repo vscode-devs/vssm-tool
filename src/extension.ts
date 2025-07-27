@@ -3,12 +3,7 @@
 import * as vscode from 'vscode';
 import { registerHelloWorldCommand } from './cmd/helloworld';
 import { registerCursorPositionCommand } from './cmd/cursor-position';
-import { 
-  registerGenerateConfigCommand,
-  GenerateEditorConfigCommand,
-  GenerateWorkspaceConfigCommand,
-  GenerateClangFormatCommand
-} from './cmd/generateConfigs';
+import { registerGenerateConfigCommand, GenerateEditorConfigCommand, GenerateWorkspaceConfigCommand, GenerateClangFormatCommand } from './cmd/generateConfigs';
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
 import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreCommand, AddToVScodeIgnoreCommand } from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';

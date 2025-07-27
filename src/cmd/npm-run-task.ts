@@ -55,7 +55,7 @@ interface TaskQuickPickItem extends vscode.QuickPickItem {
  */
 async function getTaskSource(): Promise<TaskSource> {
   // 获取vssm-tool扩展的配置
-  const config = vscode.workspace.getConfiguration('vssm-tool');
+  const config = vscode.workspace.getConfiguration('runNpmTask');
   // 从配置中获取npmTaskSource设置，默认为PackageJson
   return config.get<TaskSource>('npmTaskSource', TaskSource.PackageJson);
 }

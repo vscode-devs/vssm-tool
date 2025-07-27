@@ -111,7 +111,7 @@
           "default": "",
           "description": "Custom template file path. If specified and exists, will be used instead of the template setting."
         },
-        "vssm-tool.npmTaskSource": {
+        "runNpmTask.npmTaskSource": {
           "type": "string",
           "enum": [
             "tasks.json",

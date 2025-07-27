@@ -23,7 +23,7 @@
 "getCursorPosition.showMenuEntry": true
 "helloWorld.showMenuEntry": true
 
-"vssm-tool.npmTaskSource": "package.json"
+"runNpmTask.npmTaskSource": "package.json"
 ```
 
 

@@ -52,7 +52,7 @@ export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
           return new Dependency(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed);
         } else {
           return new Dependency(moduleName, version, vscode.TreeItemCollapsibleState.None, {
-            command: 'extension.openPackageOnNpm',
+            command: 'vssm-tool-node-dependencies.openPackageOnNpm',
             title: '',
             arguments: [moduleName]
           });
@@ -137,7 +137,8 @@ export function registerNodeDependenciesView(context: vscode.ExtensionContext): 
   const nodeDependenciesProvider = new DepNodeProvider(rootPath);
   vscode.window.registerTreeDataProvider('vssm-tool-node-dependencies', nodeDependenciesProvider);
   vscode.commands.registerCommand('vssm-tool-node-dependencies.refreshEntry', () => nodeDependenciesProvider.refresh());
-
+  vscode.commands.registerCommand('vssm-tool-node-dependencies.openPackageOnNpm', moduleName => vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(`https://www.npmjs.com/package/${moduleName}`)));
+	
   // 返回视图ID
   return 'vssm-tool-node-dependencies';
 }

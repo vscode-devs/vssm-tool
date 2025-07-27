@@ -197,7 +197,9 @@
     "clean": "shx rm -rf out",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vsix:build": "vsce package",
+    "vsix:clean": "shx rm -rf *.vsix"
   },
   "repository": {
     "type": "git",

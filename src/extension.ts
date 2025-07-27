@@ -3,9 +3,12 @@
 import * as vscode from 'vscode';
 import { registerHelloWorldCommand } from './cmd/helloworld';
 import { registerCursorPositionCommand } from './cmd/cursor-position';
-import { registerGenerateEditorConfigCommand } from './cmd/generateEditorConfig';
-import { registerGenerateWorkspaceConfigCommand } from './cmd/generateWorkspaceConfig';
-import { registerGenerateClangFormatCommand } from './cmd/generateClangFormat';
+import { 
+  registerGenerateConfigCommand,
+  GenerateEditorConfigCommand,
+  GenerateWorkspaceConfigCommand,
+  GenerateClangFormatCommand
+} from './cmd/generateConfigs';
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
 import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreCommand, AddToVScodeIgnoreCommand } from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
@@ -30,15 +33,15 @@ export function activate(context: vscode.ExtensionContext) {
       enabled: true
     },
     generateEditorConfig: {
-      register: registerGenerateEditorConfigCommand,
+      register: (ctx: vscode.ExtensionContext) => registerGenerateConfigCommand(ctx, GenerateEditorConfigCommand),
       enabled: true
     },
     generateWorkspaceConfig: {
-      register: registerGenerateWorkspaceConfigCommand,
+      register: (ctx: vscode.ExtensionContext) => registerGenerateConfigCommand(ctx, GenerateWorkspaceConfigCommand),
       enabled: true
     },
     generateClangFormat: {
-      register: registerGenerateClangFormatCommand,
+      register: (ctx: vscode.ExtensionContext) => registerGenerateConfigCommand(ctx, GenerateClangFormatCommand),
       enabled: true
     },
     npmRunTask: {

@@ -16,7 +16,7 @@
 "generateClangFormat.customTemplatePath": ""     // .clang-format 自定义模板文件路径
 
 "generateEditorConfig.customTemplatePath": ""    // .editconfig 自定义模板文件路径
-"generateEditorConfig.generateAuto": false
+"generateEditorConfig.generateAuto": false       // 是否自动创建
 
 "generateWorkspaceConfig.customTemplatePath": "" // .code-workspace 自定义模板文件路径
 

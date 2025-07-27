@@ -7,7 +7,8 @@ import { registerGenerateConfigCommand, GenerateEditorConfigCommand, GenerateWor
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
 import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreCommand, AddToVScodeIgnoreCommand } from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
-
+import { registerCommandsView } from './tree-views/vssm-tool-cmd';
+import { registerConfigView } from './tree-views/vssm-tool-config';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -58,6 +59,14 @@ export function activate(context: vscode.ExtensionContext) {
     markdownHover: {
       register: registerMarkdownHoverProvider,
       enabled: false // 暂不启用Markdown Hover功能
+    },
+    commandsView: {
+      register: registerCommandsView,
+      enabled: true
+    },
+    configView: {
+      register: registerConfigView,
+      enabled: true
     }
   };
 

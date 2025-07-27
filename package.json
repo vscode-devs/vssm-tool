@@ -113,7 +113,10 @@
         },
         "vssm-tool.npmTaskSource": {
           "type": "string",
-          "enum": ["tasks.json", "package.json"],
+          "enum": [
+            "tasks.json",
+            "package.json"
+          ],
           "default": "package.json",
           "description": "Source for npm tasks/scripts. Can be 'tasks.json' or 'package.json'."
         }
@@ -187,7 +190,30 @@
         "mac": "cmd+alt+f10",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "VSSM-TOOL",
+          "title": "VSSM-TOOL Config",
+          "icon": "$(settings)"
+        }
+      ]
+    },
+    "views": {
+      "VSSM-TOOL": [
+        {
+          "id": "vssm-tool-cmd",
+          "name": "cmd",
+          "icon": "$(browser)"
+        },
+        {
+          "id": "vssm-tool-config",
+          "name": "config",
+          "icon": "$(browser)"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile && npm run postbuild",

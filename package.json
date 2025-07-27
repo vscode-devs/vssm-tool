@@ -85,6 +85,14 @@
           "light": "resources/icon/add.svg",
           "dark": "resources/icon/add.svg"
         }
+      },
+      {
+        "command": "vssm-tool-node-dependencies-item.deleteEntry",
+        "title": "Delete",
+        "icon": {
+          "light": "resources/icon/delete.svg",
+          "dark": "resources/icon/delete.svg"
+        }
       }
     ],
     "configuration": {
@@ -222,6 +230,10 @@
           "command": "vssm-tool-node-dependencies-item.editEntry",
           "when": "view == vssm-tool-node-dependencies && viewItem == dependency",
           "group": "inline"
+        },
+        {
+          "command": "vssm-tool-node-dependencies-item.deleteEntry",
+          "when": "view == vssm-tool-node-dependencies && viewItem == dependency"
         }
       ]
     },

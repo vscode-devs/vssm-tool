@@ -138,9 +138,10 @@ export function registerNodeDependenciesView(context: vscode.ExtensionContext): 
   vscode.window.registerTreeDataProvider('vssm-tool-node-dependencies', nodeDependenciesProvider);
   vscode.commands.registerCommand('vssm-tool-node-dependencies.refreshEntry', () => nodeDependenciesProvider.refresh());
   vscode.commands.registerCommand('vssm-tool-node-dependencies.openPackageOnNpm', moduleName => vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(`https://www.npmjs.com/package/${moduleName}`)));
-	vscode.commands.registerCommand('vssm-tool-node-dependencies-item.editEntry', (node: Dependency) => vscode.window.showInformationMessage(`Successfully called edit entry on ${node.label}.`));
+  vscode.commands.registerCommand('vssm-tool-node-dependencies-item.editEntry', (node: Dependency) => vscode.window.showInformationMessage(`Successfully called edit entry on ${node.label}.`));
   vscode.commands.registerCommand('vssm-tool-node-dependencies.addEntry', () => vscode.window.showInformationMessage(`Successfully called add entry.`));
-	
+  vscode.commands.registerCommand('vssm-tool-node-dependencies-item.deleteEntry', (node: Dependency) => vscode.window.showInformationMessage(`Successfully called delete entry on ${node.label}.`));
+
   // 返回视图ID
   return 'vssm-tool-node-dependencies';
 }

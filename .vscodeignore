@@ -11,6 +11,7 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 
 .github
-.editorconfig
 out/test/**
 vssm-tool.code-workspace
+.prettierignore
+.editorconfig

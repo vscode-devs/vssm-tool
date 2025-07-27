@@ -13,6 +13,7 @@ interface GenerateCommand {
   menuTitle: string;
   templateName: string;
   defaultTemplatePath: string;
+  generateAutoContent?: (uri: Uri) => Promise<Buffer>;
 }
 
 /**
@@ -48,6 +49,19 @@ async function generateConfig(uri: Uri, config: GenerateCommand) {
   }
 
   async function writeFile() {
+    if (config.generateAutoContent) {
+      try {
+        const content = await config.generateAutoContent(currentUri);
+        if (content.length > 0) {
+          await workspace.fs.writeFile(configUri, content);
+          return;
+        }
+      } catch (error) {
+        window.showErrorMessage(error instanceof Error ? error.message : String(error));
+        return;
+      }
+    }
+
     const wc = workspace.getConfiguration(`generate${config.templateName}`);
     const customTemplatePath = wc.get<string>('customTemplatePath');
     const template = wc.get<string>('template') || 'default';
@@ -121,5 +135,55 @@ export const GenerateEditorConfigCommand: GenerateCommand = {
   commandName: 'vssm-tool.generateEditorConfig',
   menuTitle: 'Generate .editorconfig',
   templateName: 'EditorConfig',
-  defaultTemplatePath: 'DefaultTemplate.editorconfig'
+  defaultTemplatePath: 'DefaultTemplate.editorconfig',
+  generateAutoContent: async (uri: Uri) => {
+    const editor = workspace.getConfiguration('editor', uri);
+    const files = workspace.getConfiguration('files', uri);
+    const ec = workspace.getConfiguration('generateEditorConfig');
+    const generateAuto = !!ec.get<boolean>('generateAuto');
+
+    if (!generateAuto) {
+      return Buffer.from('');
+    }
+
+    const settingsLines = ['# EditorConfig is awesome: https://EditorConfig.org', '', 
+                         '# top-most EditorConfig file', 'root = true', '', '[*]'];
+
+    function addSetting(key: string, value?: string | number | boolean): void {
+      if (value !== undefined) {
+        settingsLines.push(`${key} = ${value}`);
+      }
+    }
+
+    const insertSpaces = !!editor.get<boolean>('insertSpaces');
+    addSetting('indent_style', insertSpaces ? 'space' : 'tab');
+    addSetting('indent_size', editor.get<number>('tabSize'));
+
+    const eolMap = {'\r\n': 'crlf', '\n': 'lf'};
+    let eolKey = files.get<string>('eol') || 'auto';
+    if (eolKey === 'auto') {
+      eolKey = require('os').EOL;
+    }
+    addSetting('end_of_line', eolMap[eolKey as keyof typeof eolMap]);
+
+    const encodingMap = {
+      iso88591: 'latin1',
+      utf8: 'utf-8',
+      utf8bom: 'utf-8-bom',
+      utf16be: 'utf-16-be',
+      utf16le: 'utf-16-le'
+    };
+    addSetting('charset', encodingMap[files.get<string>('encoding') as keyof typeof encodingMap]);
+
+    addSetting('trim_trailing_whitespace', !!files.get<boolean>('trimTrailingWhitespace'));
+
+    const insertFinalNewline = !!files.get<boolean>('insertFinalNewline');
+    addSetting('insert_final_newline', insertFinalNewline);
+
+    if (insertFinalNewline) {
+      settingsLines.push('');
+    }
+
+    return Buffer.from(settingsLines.join(eolKey));
+  }
 };

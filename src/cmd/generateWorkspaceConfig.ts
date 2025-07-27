@@ -38,20 +38,12 @@ async function generateWorkspaceConfig(uri: Uri) {
 
     // 如果文件已存在，则显示错误消息并返回
     if (stats.type === FileType.File) {
-      window.showErrorMessage(
-        `A ${folderName}.code-workspace file already exists in this workspace.`,
-      );
+      window.showErrorMessage(`A ${folderName}.code-workspace file already exists in this workspace.`);
       return;
     }
   } catch (err: unknown) {
     // 处理文件不存在的错误（这是预期情况）和其他可能的错误
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'name' in err &&
-      'message' in err &&
-      typeof err.message === 'string'
-    ) {
+    if (typeof err === 'object' && err !== null && 'name' in err && 'message' in err && typeof err.message === 'string') {
       if (err.name === 'EntryNotFound (FileSystemError)') {
         // 文件不存在，可以继续创建
         await writeFile();
@@ -76,11 +68,7 @@ async function generateWorkspaceConfig(uri: Uri) {
     // 获取模板配置，默认为'default'
     const template = wc.get<string>('template') || 'default';
     // 解析默认模板路径
-    const defaultTemplatePath = resolve(
-      __dirname,
-      '..',
-      'DefaultTemplate.code-workspace',
-    );
+    const defaultTemplatePath = resolve(__dirname, '..', 'DefaultTemplate.code-workspace');
 
     let templateBuffer: Buffer;
     try {
@@ -103,12 +91,7 @@ async function generateWorkspaceConfig(uri: Uri) {
       templateBuffer = await readFile(templatePath);
     } catch (error) {
       // 处理模板文件读取错误
-      if (
-        typeof error !== 'object' ||
-        error === null ||
-        !('message' in error) ||
-        typeof error.message !== 'string'
-      ) {
+      if (typeof error !== 'object' || error === null || !('message' in error) || typeof error.message !== 'string') {
         return;
       }
       window.showErrorMessage(error.message);
@@ -120,12 +103,7 @@ async function generateWorkspaceConfig(uri: Uri) {
       await workspace.fs.writeFile(workspaceConfigUri, templateBuffer);
     } catch (error) {
       // 处理文件写入错误
-      if (
-        typeof error !== 'object' ||
-        error === null ||
-        !('message' in error) ||
-        typeof error.message !== 'string'
-      ) {
+      if (typeof error !== 'object' || error === null || !('message' in error) || typeof error.message !== 'string') {
         return;
       }
       window.showErrorMessage(error.message);

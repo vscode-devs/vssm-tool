@@ -17,7 +17,7 @@ async function generateEditorConfig(uri: Uri) {
   const workspaceUri = workspace.workspaceFolders?.[0].uri;
   // 优先使用传入的URI，如果没有则使用工作区URI
   const currentUri = uri || workspaceUri;
-  
+
   // 检查是否有有效的URI
   if (!currentUri) {
     window.showErrorMessage("Workspace doesn't contain any folders.");
@@ -31,20 +31,12 @@ async function generateEditorConfig(uri: Uri) {
     // 检查.editorconfig文件是否已存在
     const stats = await workspace.fs.stat(editorConfigUri);
     if (stats.type === FileType.File) {
-      window.showErrorMessage(
-        'An .editorconfig file already exists in this workspace.',
-      );
+      window.showErrorMessage('An .editorconfig file already exists in this workspace.');
       return;
     }
   } catch (err: unknown) {
     // 处理文件不存在的异常情况
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'name' in err &&
-      'message' in err &&
-      typeof err.message === 'string'
-    ) {
+    if (typeof err === 'object' && err !== null && 'name' in err && 'message' in err && typeof err.message === 'string') {
       if (err.name === 'EntryNotFound (FileSystemError)') {
         // 文件不存在，继续写入操作
         writeFile();
@@ -63,7 +55,7 @@ async function generateEditorConfig(uri: Uri) {
   async function writeFile() {
     // 获取 generateEditorConfig 相关配置,package.json中
     const ec = workspace.getConfiguration('generateEditorConfig');
-		const generateAuto = !!ec.get<boolean>('generateAuto');
+    const generateAuto = !!ec.get<boolean>('generateAuto');
 
     if (!generateAuto) {
       // 获取自定义模板路径配置
@@ -71,11 +63,7 @@ async function generateEditorConfig(uri: Uri) {
       // 获取模板配置，默认为'default'
       const template = ec.get<string>('template') || 'default';
       // 解析默认模板路径
-      const defaultTemplatePath = resolve(
-        __dirname,
-        '..',
-        'DefaultTemplate.editorconfig',
-      );
+      const defaultTemplatePath = resolve(__dirname, '..', 'DefaultTemplate.editorconfig');
 
       let templateBuffer: Buffer;
       try {
@@ -97,20 +85,10 @@ async function generateEditorConfig(uri: Uri) {
         templateBuffer = await readFile(templatePath);
       } catch (error) {
         // 处理模板文件读取错误
-        if (
-          typeof error !== 'object' ||
-          error === null ||
-          !('message' in error) ||
-          typeof error.message !== 'string'
-        ) {
+        if (typeof error !== 'object' || error === null || !('message' in error) || typeof error.message !== 'string') {
           return;
         }
-        window.showErrorMessage(
-          [
-            `Could not read EditorConfig template file at ${template}`,
-            error.message,
-          ].join(EOL),
-        );
+        window.showErrorMessage([`Could not read EditorConfig template file at ${template}`, error.message].join(EOL));
         return;
       }
 
@@ -119,12 +97,7 @@ async function generateEditorConfig(uri: Uri) {
         workspace.fs.writeFile(editorConfigUri, templateBuffer);
       } catch (error) {
         // 处理文件写入错误
-        if (
-          typeof error !== 'object' ||
-          error === null ||
-          !('message' in error) ||
-          typeof error.message !== 'string'
-        ) {
+        if (typeof error !== 'object' || error === null || !('message' in error) || typeof error.message !== 'string') {
           return;
         }
         window.showErrorMessage(error.message);
@@ -138,14 +111,7 @@ async function generateEditorConfig(uri: Uri) {
     // 获取文件相关配置
     const files = workspace.getConfiguration('files', currentUri);
     // 初始化.editorconfig内容
-    const settingsLines = [
-      '# EditorConfig is awesome: https://EditorConfig.org',
-      '',
-      '# top-most EditorConfig file',
-      'root = true',
-      '',
-      '[*]',
-    ];
+    const settingsLines = ['# EditorConfig is awesome: https://EditorConfig.org', '', '# top-most EditorConfig file', 'root = true', '', '[*]'];
 
     /**
      * @brief 添加设置项
@@ -166,7 +132,7 @@ async function generateEditorConfig(uri: Uri) {
     // 添加行尾设置
     const eolMap = {
       '\r\n': 'crlf',
-      '\n': 'lf',
+      '\n': 'lf'
     };
     let eolKey = files.get<string>('eol') || 'auto';
     if (eolKey === 'auto') {
@@ -180,18 +146,12 @@ async function generateEditorConfig(uri: Uri) {
       utf8: 'utf-8',
       utf8bom: 'utf-8-bom',
       utf16be: 'utf-16-be',
-      utf16le: 'utf-16-le',
+      utf16le: 'utf-16-le'
     };
-    addSetting(
-      'charset',
-      encodingMap[files.get<string>('encoding') as keyof typeof encodingMap],
-    );
+    addSetting('charset', encodingMap[files.get<string>('encoding') as keyof typeof encodingMap]);
 
     // 添加其他设置
-    addSetting(
-      'trim_trailing_whitespace',
-      !!files.get<boolean>('trimTrailingWhitespace'),
-    );
+    addSetting('trim_trailing_whitespace', !!files.get<boolean>('trimTrailingWhitespace'));
 
     const insertFinalNewline = !!files.get<boolean>('insertFinalNewline');
     addSetting('insert_final_newline', insertFinalNewline);
@@ -203,18 +163,10 @@ async function generateEditorConfig(uri: Uri) {
 
     try {
       // 将生成的配置写入.editorconfig文件
-      await workspace.fs.writeFile(
-        editorConfigUri,
-        Buffer.from(settingsLines.join(eolKey)),
-      );
+      await workspace.fs.writeFile(editorConfigUri, Buffer.from(settingsLines.join(eolKey)));
     } catch (err) {
       // 处理文件写入错误
-      if (
-        typeof err !== 'object' ||
-        err === null ||
-        !('message' in err) ||
-        typeof err.message !== 'string'
-      ) {
+      if (typeof err !== 'object' || err === null || !('message' in err) || typeof err.message !== 'string') {
         return;
       }
 

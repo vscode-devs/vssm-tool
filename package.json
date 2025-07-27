@@ -199,7 +199,9 @@
     "lint": "eslint src",
     "test": "vscode-test",
     "vsix:build": "vsce package",
-    "vsix:clean": "shx rm -rf *.vsix"
+    "vsix:clean": "shx rm -rf *.vsix",
+    "format:check": "prettier . --check",
+    "format:fix": "prettier . --write"
   },
   "repository": {
     "type": "git",
@@ -215,6 +217,7 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.25.1",
+    "prettier": "^3.6.2",
     "shx": "^0.3.4",
     "typescript": "^5.8.3"
   }

@@ -7,12 +7,7 @@ import { registerGenerateEditorConfigCommand } from './cmd/generateEditorConfig'
 import { registerGenerateWorkspaceConfigCommand } from './cmd/generateWorkspaceConfig';
 import { registerGenerateClangFormatCommand } from './cmd/generateClangFormat';
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
-import { 
-    registerAddToIgnoreCommand,
-    AddToPrettierIgnoreCommand,
-    AddToGitIgnoreCommand,
-    AddToVScodeIgnoreCommand
-} from './cmd/addToIgnore';
+import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreCommand, AddToVScodeIgnoreCommand } from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
 
 // This method is called when your extension is activated
@@ -97,8 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
   for (const [name, { register, enabled }] of Object.entries(commands)) {
     if (enabled) {
       tryRegister(name, register);
-    }
-    else {
+    } else {
       // console.warn(`Command "${name}" is disabled, skipping registration`);
       registrationResults.skipped++;
     }
@@ -111,4 +105,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}

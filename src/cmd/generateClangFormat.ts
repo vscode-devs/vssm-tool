@@ -30,20 +30,12 @@ async function generateClangFormat(uri: Uri) {
     // 检查.clang-format文件是否已存在
     const stats = await workspace.fs.stat(clangFormatUri);
     if (stats.type === FileType.File) {
-      window.showErrorMessage(
-        'A .clang-format file already exists in this workspace.',
-      );
+      window.showErrorMessage('A .clang-format file already exists in this workspace.');
       return;
     }
   } catch (err: unknown) {
     // 处理文件不存在的异常情况
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'name' in err &&
-      'message' in err &&
-      typeof err.message === 'string'
-    ) {
+    if (typeof err === 'object' && err !== null && 'name' in err && 'message' in err && typeof err.message === 'string') {
       if (err.name === 'EntryNotFound (FileSystemError)') {
         // 文件不存在，继续写入操作
         writeFile();
@@ -67,11 +59,7 @@ async function generateClangFormat(uri: Uri) {
     // 获取模板配置，默认为'default'
     const template = cc.get<string>('template') || 'default';
     // 解析默认模板路径
-    const defaultTemplatePath = resolve(
-      __dirname,
-      '..',
-      'DefaultTemplate.clang-format',
-    );
+    const defaultTemplatePath = resolve(__dirname, '..', 'DefaultTemplate.clang-format');
 
     let templateBuffer: Buffer;
     try {
@@ -93,20 +81,10 @@ async function generateClangFormat(uri: Uri) {
       templateBuffer = await readFile(templatePath);
     } catch (error) {
       // 处理模板文件读取错误
-      if (
-        typeof error !== 'object' ||
-        error === null ||
-        !('message' in error) ||
-        typeof error.message !== 'string'
-      ) {
+      if (typeof error !== 'object' || error === null || !('message' in error) || typeof error.message !== 'string') {
         return;
       }
-      window.showErrorMessage(
-        [
-          `Could not read clang-format template file at ${template}`,
-          error.message,
-        ].join('\n'),
-      );
+      window.showErrorMessage([`Could not read clang-format template file at ${template}`, error.message].join('\n'));
       return;
     }
 
@@ -115,12 +93,7 @@ async function generateClangFormat(uri: Uri) {
       await workspace.fs.writeFile(clangFormatUri, templateBuffer);
     } catch (error) {
       // 处理文件写入错误
-      if (
-        typeof error !== 'object' ||
-        error === null ||
-        !('message' in error) ||
-        typeof error.message !== 'string'
-      ) {
+      if (typeof error !== 'object' || error === null || !('message' in error) || typeof error.message !== 'string') {
         return;
       }
       window.showErrorMessage(error.message);

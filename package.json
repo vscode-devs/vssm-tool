@@ -45,6 +45,22 @@
       {
         "command": "vssm-tool.runNpmTask",
         "title": "Run NPM Task"
+      },
+      {
+        "command": "vssm-tool.addToPrettierIgnore",
+        "title": "add to .prettierignore"
+      },
+      {
+        "command": "vssm-tool.addToPrettierIgnore",
+        "title": "add to .prettierignore"
+      },
+      {
+        "command": "vssm-tool.addToGitIgnore",
+        "title": "add to .gitignore"
+      },
+      {
+        "command": "vssm-tool.addToVScodeIgnore",
+        "title": "add to .vscodeignore"
       }
     ],
     "configuration": {
@@ -52,12 +68,12 @@
       "properties": {
         "getCursorPosition.showMenuEntry": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Show the 'get cursor position' entry in the context menu of the Explorer view."
         },
         "helloWorld.showMenuEntry": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Show the 'Hello World' entry in the context menu of the Explorer view."
         },
         "generateEditorConfig.generateAuto": {
@@ -127,13 +143,25 @@
       "vssm-tool.menu": [
         {
           "command": "vssm-tool.helloWorld",
-          "group": "1_commands",
+          "group": "1_commands@1",
           "when": "config.helloWorld.showMenuEntry"
         },
         {
           "command": "vssm-tool.getCursorPosition",
-          "group": "2_commands",
+          "group": "1_commands@2",
           "when": "config.getCursorPosition.showMenuEntry"
+        },
+        {
+          "command": "vssm-tool.addToPrettierIgnore",
+          "group": "2_commands@1"
+        },
+        {
+          "command": "vssm-tool.addToGitIgnore",
+          "group": "2_commands@2"
+        },
+        {
+          "command": "vssm-tool.addToVScodeIgnore",
+          "group": "2_commands@3"
         },
         {
           "command": "vssm-tool.generateEditorConfig",

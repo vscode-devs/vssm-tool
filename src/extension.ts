@@ -7,6 +7,12 @@ import { registerGenerateEditorConfigCommand } from './cmd/generateEditorConfig'
 import { registerGenerateWorkspaceConfigCommand } from './cmd/generateWorkspaceConfig';
 import { registerGenerateClangFormatCommand } from './cmd/generateClangFormat';
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
+import { 
+    registerAddToIgnoreCommand,
+    AddToPrettierIgnoreCommand,
+    AddToGitIgnoreCommand,
+    AddToVScodeIgnoreCommand
+} from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
 
 // This method is called when your extension is activated
@@ -42,6 +48,18 @@ export function activate(context: vscode.ExtensionContext) {
     },
     npmRunTask: {
       register: registerNpmRunTaskCommand,
+      enabled: true
+    },
+    addToPrettierIgnore: {
+      register: (ctx: vscode.ExtensionContext) => registerAddToIgnoreCommand(ctx, AddToPrettierIgnoreCommand),
+      enabled: true
+    },
+    addToGitIgnore: {
+      register: (ctx: vscode.ExtensionContext) => registerAddToIgnoreCommand(ctx, AddToGitIgnoreCommand),
+      enabled: true
+    },
+    AddToVScodeIgnoreCommand: {
+      register: (ctx: vscode.ExtensionContext) => registerAddToIgnoreCommand(ctx, AddToVScodeIgnoreCommand),
       enabled: true
     },
     markdownHover: {

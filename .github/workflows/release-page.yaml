@@ -125,10 +125,7 @@ jobs:
             **自动生成说明:**  
             此版本基于已验证的Git标签自动生成。
           files: |
-            bin
-            dist
-            scaffolds
-            .editorconfig
+            src/DefaultTemplate.*
             package.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

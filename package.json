@@ -9,7 +9,7 @@
   ],
   "publisher": "ms-vs-extensions",
   "version": "1.0.1",
-  "icon": "images/logo.png",
+  "icon": "resources/images/logo.png",
   "engines": {
     "vscode": "^1.98.0"
   },

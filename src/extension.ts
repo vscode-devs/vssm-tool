@@ -9,6 +9,7 @@ import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreC
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
 import { registerCommandsView } from './tree-views/vssm-tool-cmd';
 import { registerConfigView } from './tree-views/vssm-tool-config';
+import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-dependencies';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -66,6 +67,10 @@ export function activate(context: vscode.ExtensionContext) {
     },
     configView: {
       register: registerConfigView,
+      enabled: true
+    },
+    nodeDependenciesView: {
+      register: registerNodeDependenciesView,
       enabled: true
     }
   };

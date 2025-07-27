@@ -211,6 +211,12 @@
           "id": "vssm-tool-config",
           "name": "config",
           "icon": "$(browser)"
+        },
+        {
+          "id": "vssm-tool-node-dependencies",
+          "name": "Node Dependencies",
+          "icon": "resources/icon/dep.svg",
+          "contextualTitle": "Package Explorer"
         }
       ]
     }

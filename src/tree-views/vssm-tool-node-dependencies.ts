@@ -136,6 +136,7 @@ export function registerNodeDependenciesView(context: vscode.ExtensionContext): 
   // Samples of `window.registerTreeDataProvider`
   const nodeDependenciesProvider = new DepNodeProvider(rootPath);
   vscode.window.registerTreeDataProvider('vssm-tool-node-dependencies', nodeDependenciesProvider);
+  vscode.commands.registerCommand('vssm-tool-node-dependencies.refreshEntry', () => nodeDependenciesProvider.refresh());
 
   // 返回视图ID
   return 'vssm-tool-node-dependencies';

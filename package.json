@@ -61,6 +61,14 @@
       {
         "command": "vssm-tool.addToVScodeIgnore",
         "title": "add to .vscodeignore"
+      },
+      {
+        "command": "vssm-tool-node-dependencies.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/icon/light/refresh.svg",
+          "dark": "resources/icon/dark/refresh.svg"
+        }
       }
     ],
     "configuration": {
@@ -180,6 +188,13 @@
           "command": "vssm-tool.generateClangFormat",
           "group": "3_commands@3",
           "when": "explorerResourceIsFolder"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "vssm-tool-node-dependencies.refreshEntry",
+          "when": "view == vssm-tool-node-dependencies",
+          "group": "navigation"
         }
       ]
     },

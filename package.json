@@ -109,6 +109,14 @@
           "light": "resources/icon/add.svg",
           "dark": "resources/icon/add.svg"
         }
+      },
+      {
+        "command": "vssm-tool-fixed-data.deleteEntry",
+        "title": "Delete",
+        "icon": {
+          "light": "resources/icon/delete.svg",
+          "dark": "resources/icon/delete.svg"
+        }
       }
     ],
     "configuration": {
@@ -263,6 +271,11 @@
         },
         {
           "command": "vssm-tool-fixed-data.addEntry",
+          "when": "view == vssm-tool-fixed-data",
+          "group": "inline"
+        },
+        {
+          "command": "vssm-tool-fixed-data.deleteEntry",
           "when": "view == vssm-tool-fixed-data",
           "group": "inline"
         }

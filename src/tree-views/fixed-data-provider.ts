@@ -156,6 +156,38 @@ export class FixedDataProvider implements vscode.TreeDataProvider<FixedDataNode>
   }
 
   /**
+   * @brief 在节点数组中删除指定标签的节点
+   * @param nodes 节点数组
+   * @param label 要删除的节点标签
+   * @return 是否成功删除
+   */
+  private deleteNode(nodes: FixedDataNode[], label: string): boolean {
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].label === label) {
+        nodes.splice(i, 1);
+        return true;
+      }
+      if (nodes[i].children) {
+        // 确保children存在，如果不存在则初始化为空数组
+        const children = nodes[i].children || [];
+        if (this.deleteNode(children, label)) {
+          // 如果删除了子节点且父节点不再有子节点，更新父节点状态
+          if (children.length === 0) {
+            const updatedParent = new FixedDataNode(
+              nodes[i].label,
+              vscode.TreeItemCollapsibleState.None,
+              []
+            );
+            this.replaceNode(this.data, nodes[i].label, updatedParent);
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * @brief 根据标签查找节点
    * @param nodes 节点数组
    * @param label 要查找的标签
@@ -233,6 +265,23 @@ export class FixedDataProvider implements vscode.TreeDataProvider<FixedDataNode>
     // 如果有父节点，返回其子节点（如果有的话）
     return Promise.resolve(element.children || []);
   }
+
+  /**
+   * @brief 删除指定节点
+   * @param element 要删除的树节点元素
+   * @description 从树中删除指定节点，然后刷新视图
+   */
+  deleteItem(element?: FixedDataNode): void {
+    if (!element) {
+      return; // 没有选中节点
+    }
+    
+    // 删除节点
+    if (this.deleteNode(this.data, element.label)) {
+      // 刷新视图
+      this.refresh();
+    }
+  }
 }
 
 /**
@@ -254,6 +303,9 @@ export function registerFixedDataView(context: vscode.ExtensionContext): string 
   
   // 注册添加命令，确保传递选中的节点作为参数
   vscode.commands.registerCommand('vssm-tool-fixed-data.addEntry', (node: FixedDataNode) => fixedDataProvider.addNewItem(node));
+  
+  // 注册删除命令，确保传递选中的节点作为参数
+  vscode.commands.registerCommand('vssm-tool-fixed-data.deleteEntry', (node: FixedDataNode) => fixedDataProvider.deleteItem(node));
 
   // 返回视图ID
   return 'vssm-tool-fixed-data';

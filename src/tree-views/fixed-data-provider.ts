@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 /**
  * @class FixedDataNode
@@ -21,6 +22,19 @@ export class FixedDataNode extends vscode.TreeItem {
     public readonly children?: FixedDataNode[]
   ) {
     super(label, collapsibleState);
+    
+    // 为有子节点的父节点设置category-style-01.svg图标
+    if (children && children.length > 0) {
+      this.iconPath = {
+        light: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'category-style-01.svg')),
+        dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'category-style-01.svg'))
+      };
+    } else {
+      this.iconPath = {
+        light: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'category-style-02.svg')),
+        dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'category-style-02.svg'))
+      };
+    }
   }
 }
 

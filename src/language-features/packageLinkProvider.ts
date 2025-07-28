@@ -71,7 +71,8 @@ export class PackageLinkProvider implements vscode.DocumentLinkProvider {
           const range = new vscode.Range(position, position.translate(0, packageName.length));
 
           // 创建文档链接对象，指定链接范围和目标URI
-          const link = new vscode.DocumentLink(range, vscode.Uri.file(this.getPackagePath(packageName)));
+          const packagePath = this.getPackagePath(packageName);
+          const link = new vscode.DocumentLink(range, vscode.Uri.file(packagePath));
           // 设置鼠标悬停时显示的提示文本
           link.tooltip = `Open ${packageName} 's local link.`;
           // 将创建的链接添加到链接数组中
@@ -160,5 +161,15 @@ export function registerPackageLinkProvider(context: vscode.ExtensionContext) {
     { language: 'json', pattern: '**/package.json' },
     provider
   ));
+
+  // 监听活动编辑器变化事件
+  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
+    if (editor && editor.document.fileName.includes('node_modules') &&
+      editor.document.fileName.endsWith('README.md')) {
+      // 在资源管理器中显示当前文件
+      vscode.commands.executeCommand('revealInExplorer', editor.document.uri);
+    }
+  }));
+
   return providerName;
 }

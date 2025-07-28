@@ -101,6 +101,14 @@
           "light": "resources/icon/light/refresh.svg",
           "dark": "resources/icon/dark/refresh.svg"
         }
+      },
+      {
+        "command": "vssm-tool-fixed-data.addEntry",
+        "title": "Add",
+        "icon": {
+          "light": "resources/icon/add.svg",
+          "dark": "resources/icon/add.svg"
+        }
       }
     ],
     "configuration": {
@@ -234,6 +242,11 @@
         },
         {
           "command": "vssm-tool-fixed-data.refreshEntry",
+          "when": "view == vssm-tool-fixed-data",
+          "group": "navigation"
+        },
+        {
+          "command": "vssm-tool-fixed-data.addEntry",
           "when": "view == vssm-tool-fixed-data",
           "group": "navigation"
         }

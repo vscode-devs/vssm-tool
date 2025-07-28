@@ -89,11 +89,14 @@ export class FixedDataProvider implements vscode.TreeDataProvider<FixedDataNode>
   }
 
   /**
-   * @brief 添加新项到指定父节点
-   * @param parentLabel 父节点标签，如果为undefined则添加到根节点
+   * @brief 添加新项
+   * @param element 当前选中的树节点元素，如果为undefined则添加到根节点
    * @description 创建一个新项并添加到指定父节点或根节点，然后刷新视图
    */
-  addNewItem(parentLabel?: string): void {
+  addNewItem(element?: FixedDataNode): void {
+    // 确定父节点标签
+    const parentLabel = element?.label;
+    
     // 生成新项目的唯一标签
     const timestamp = this.formatDateTime(new Date());
     const newItemLabel = parentLabel ? 
@@ -174,6 +177,22 @@ export class FixedDataProvider implements vscode.TreeDataProvider<FixedDataNode>
   }
 
   /**
+   * @brief 获取所有节点的标签
+   * @param nodes 节点数组
+   * @return 包含所有节点标签的数组
+   */
+  private getAllNodeLabels(nodes: FixedDataNode[]): string[] {
+    const labels: string[] = [];
+    for (const node of nodes) {
+      labels.push(node.label);
+      if (node.children) {
+        labels.push(...this.getAllNodeLabels(node.children));
+      }
+    }
+    return labels;
+  }
+
+  /**
    * @brief 获取树节点的显示项
    * @param element 树节点元素
    * @return 返回节点本身作为TreeItem
@@ -233,8 +252,8 @@ export function registerFixedDataView(context: vscode.ExtensionContext): string 
   // 注册刷新命令
   vscode.commands.registerCommand('vssm-tool-fixed-data.refreshEntry', () => fixedDataProvider.refresh());
   
-  // 注册添加命令
-  vscode.commands.registerCommand('vssm-tool-fixed-data.addEntry', () => fixedDataProvider.addNewItem());
+  // 注册添加命令，确保传递选中的节点作为参数
+  vscode.commands.registerCommand('vssm-tool-fixed-data.addEntry', (node: FixedDataNode) => fixedDataProvider.addNewItem(node));
 
   // 返回视图ID
   return 'vssm-tool-fixed-data';

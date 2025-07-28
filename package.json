@@ -260,6 +260,11 @@
         {
           "command": "vssm-tool-node-dependencies-item.deleteEntry",
           "when": "view == vssm-tool-node-dependencies && viewItem == dependency"
+        },
+        {
+          "command": "vssm-tool-fixed-data.addEntry",
+          "when": "view == vssm-tool-fixed-data",
+          "group": "inline"
         }
       ]
     },

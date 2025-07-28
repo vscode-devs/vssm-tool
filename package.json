@@ -82,16 +82,16 @@
         "command": "vssm-tool-node-dependencies.addEntry",
         "title": "Add",
         "icon": {
-          "light": "resources/icon/add.svg",
-          "dark": "resources/icon/add.svg"
+          "light": "resources/icon/light/add-style-01.svg",
+          "dark": "resources/icon/dark/add-style-01.svg"
         }
       },
       {
         "command": "vssm-tool-node-dependencies-item.deleteEntry",
         "title": "Delete",
         "icon": {
-          "light": "resources/icon/delete.svg",
-          "dark": "resources/icon/delete.svg"
+          "light": "resources/icon/light/delete-style-01.svg",
+          "dark": "resources/icon/dark/delete-style-01.svg"
         }
       },
       {
@@ -106,16 +106,16 @@
         "command": "vssm-tool-fixed-data.addEntry",
         "title": "Add",
         "icon": {
-          "light": "resources/icon/add.svg",
-          "dark": "resources/icon/add.svg"
+          "light": "resources/icon/light/add-style-01.svg",
+          "dark": "resources/icon/dark/add-style-01.svg"
         }
       },
       {
         "command": "vssm-tool-fixed-data.deleteEntry",
         "title": "Delete",
         "icon": {
-          "light": "resources/icon/delete.svg",
-          "dark": "resources/icon/delete.svg"
+          "light": "resources/icon/light/delete-style-01.svg",
+          "dark": "resources/icon/dark/delete-style-01.svg"
         }
       },
       {
@@ -307,7 +307,7 @@
         {
           "id": "VSSM-TOOL",
           "title": "VSSM-TOOL Config",
-          "icon": "$(settings)"
+          "icon": "resources/icon/dark/settings-style-01.svg"
         }
       ]
     },

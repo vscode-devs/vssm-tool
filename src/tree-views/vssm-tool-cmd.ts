@@ -51,9 +51,10 @@ export class CommandsTreeDataProvider implements vscode.TreeDataProvider<Command
             // 检查是否有contributes.commands配置
             if (packageJson.contributes?.commands) {
                 // 将命令配置转换为CommandItem对象数组
+                // 使用完整的命令ID作为显示标签
                 this.commands = packageJson.contributes.commands.map(
                     (cmd: CommandInfo) => 
-                        new CommandItem(cmd.title, cmd.command)
+                        new CommandItem(cmd.command, cmd.command)
                 );
             }
         } catch (error) {

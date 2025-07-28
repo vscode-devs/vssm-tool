@@ -93,6 +93,14 @@
           "light": "resources/icon/delete.svg",
           "dark": "resources/icon/delete.svg"
         }
+      },
+      {
+        "command": "vssm-tool-fixed-data.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/icon/light/refresh.svg",
+          "dark": "resources/icon/dark/refresh.svg"
+        }
       }
     ],
     "configuration": {
@@ -223,6 +231,11 @@
         {
           "command": "vssm-tool-node-dependencies.addEntry",
           "when": "view == vssm-tool-node-dependencies"
+        },
+        {
+          "command": "vssm-tool-fixed-data.refreshEntry",
+          "when": "view == vssm-tool-fixed-data",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -271,6 +284,12 @@
           "name": "Node Dependencies",
           "icon": "resources/icon/dep.svg",
           "contextualTitle": "Package Explorer"
+        },
+        {
+          "id": "vssm-tool-fixed-data",
+          "name": "fixed data provider",
+          "icon": "resources/icon/test-style-01.svg",
+          "contextualTitle": "Tree View Test"
         }
       ]
     }

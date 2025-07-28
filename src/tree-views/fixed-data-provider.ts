@@ -282,6 +282,47 @@ export class FixedDataProvider implements vscode.TreeDataProvider<FixedDataNode>
       this.refresh();
     }
   }
+
+  /**
+   * @brief 编辑指定节点
+   * @param element 要编辑的树节点元素
+   * @description 修改指定节点的标签，然后刷新视图
+   */
+  async editItem(element?: FixedDataNode): Promise<void> {
+    if (!element) {
+      return; // 没有选中节点
+    }
+    
+    // 显示输入框获取新标签
+    const newLabel = await vscode.window.showInputBox({
+      prompt: 'Enter new label for the item',
+      value: element.label,
+      validateInput: (value) => {
+        if (!value || value.trim().length === 0) {
+          return 'Label cannot be empty';
+        }
+        return null;
+      }
+    });
+    
+    // 如果用户取消输入或输入为空，不进行修改
+    if (!newLabel || newLabel.trim().length === 0) {
+      return;
+    }
+    
+    // 创建新节点，保持其他属性不变
+    const updatedNode = new FixedDataNode(
+      newLabel,
+      element.collapsibleState,
+      element.children
+    );
+    
+    // 替换节点
+    if (this.replaceNode(this.data, element.label, updatedNode)) {
+      // 刷新视图
+      this.refresh();
+    }
+  }
 }
 
 /**
@@ -306,6 +347,9 @@ export function registerFixedDataView(context: vscode.ExtensionContext): string 
   
   // 注册删除命令，确保传递选中的节点作为参数
   vscode.commands.registerCommand('vssm-tool-fixed-data.deleteEntry', (node: FixedDataNode) => fixedDataProvider.deleteItem(node));
+  
+  // 注册编辑命令，确保传递选中的节点作为参数
+  vscode.commands.registerCommand('vssm-tool-fixed-data.editEntry', (node: FixedDataNode) => fixedDataProvider.editItem(node));
 
   // 返回视图ID
   return 'vssm-tool-fixed-data';

@@ -7,6 +7,7 @@ import { registerGenerateConfigCommand, GenerateEditorConfigCommand, GenerateWor
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
 import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreCommand, AddToVScodeIgnoreCommand } from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
+import { registerPackageLinkProvider } from './language-features/packageLinkProvider';
 import { registerCommandsView } from './tree-views/vssm-tool-cmd';
 import { registerConfigView } from './tree-views/vssm-tool-config';
 import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-dependencies';
@@ -62,6 +63,10 @@ export function activate(context: vscode.ExtensionContext) {
     markdownHover: {
       register: registerMarkdownHoverProvider,
       enabled: false // 暂不启用Markdown Hover功能
+    },
+    packageLink: {
+      register: registerPackageLinkProvider,
+      enabled: true
     },
     commandsView: {
       register: registerCommandsView,

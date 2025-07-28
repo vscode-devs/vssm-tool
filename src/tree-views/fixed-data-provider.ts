@@ -29,11 +29,15 @@ export class FixedDataNode extends vscode.TreeItem {
         light: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'category-style-01.svg')),
         dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'category-style-01.svg'))
       };
+      // 为父节点设置悬停提示
+      this.tooltip = `Category: ${this.label}`;
     } else {
       this.iconPath = {
         light: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'category-style-02.svg')),
         dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'category-style-02.svg'))
       };
+      // 为子节点设置悬停提示
+      this.tooltip = `Item: ${this.label}`;
     }
   }
 }

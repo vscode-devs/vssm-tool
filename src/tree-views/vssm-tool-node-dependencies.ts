@@ -8,13 +8,14 @@ import * as path from 'path';
  * @description 实现VS Code的TreeDataProvider接口，为依赖树视图提供数据。负责读取package.json中的依赖项，并构建树形结构显示。该类管理依赖树的数据源，处理数据刷新、子节点获取等核心功能。
  */
 export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
-
   /**
    * @brief 事件发射器，用于通知树视图数据已更改
    * @description 当依赖树需要刷新时，调用fire()方法触发此事件，通知VS Code重新获取数据并更新UI显示。
    */
-  private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | void> = new vscode.EventEmitter<Dependency | undefined | void>();
-  
+  private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | void> = new vscode.EventEmitter<
+    Dependency | undefined | void
+  >();
+
   /**
    * @brief 树视图数据更改事件
    * @description VS Code通过此事件监听数据变化并更新UI。外部可以通过订阅此事件来响应数据变化。
@@ -26,8 +27,7 @@ export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
    * @param workspaceRoot 工作区根路径
    * @description 初始化依赖节点提供者，传入工作区根路径用于后续文件路径的构建和依赖查找。
    */
-  constructor(private workspaceRoot: string | undefined) {
-  }
+  constructor(private workspaceRoot: string | undefined) {}
 
   /**
    * @brief 刷新依赖树视图
@@ -63,7 +63,9 @@ export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
 
     // 如果有父节点（即点击了某个依赖项），获取该依赖项的子依赖
     if (element) {
-      return Promise.resolve(this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.label, 'package.json')));
+      return Promise.resolve(
+        this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.label, 'package.json'))
+      );
     } else {
       // 如果没有父节点（即根节点），获取当前工作区的package.json中的依赖
       const packageJsonPath = path.join(this.workspaceRoot, 'package.json');
@@ -106,14 +108,14 @@ export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
 
       // 处理dependencies
       const deps = packageJson.dependencies
-        ? Object.keys(packageJson.dependencies).map(dep => toDep(dep, packageJson.dependencies[dep]))
+        ? Object.keys(packageJson.dependencies).map((dep) => toDep(dep, packageJson.dependencies[dep]))
         : [];
-      
+
       // 处理devDependencies
       const devDeps = packageJson.devDependencies
-        ? Object.keys(packageJson.devDependencies).map(dep => toDep(dep, packageJson.devDependencies[dep]))
+        ? Object.keys(packageJson.devDependencies).map((dep) => toDep(dep, packageJson.devDependencies[dep]))
         : [];
-      
+
       // 合并并返回所有依赖项
       return deps.concat(devDeps);
     } else {
@@ -143,7 +145,6 @@ export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
  * @description 表示树视图中的单个依赖节点，继承自vscode.TreeItem。定义了依赖节点的显示属性（如标签、描述、图标）和行为（如点击命令、上下文菜单）。
  */
 export class Dependency extends vscode.TreeItem {
-
   /**
    * @brief 构造函数
    * @param label 节点显示的标签（包名）
@@ -209,35 +210,37 @@ export class Dependency extends vscode.TreeItem {
  */
 export function registerNodeDependenciesView(context: vscode.ExtensionContext): string {
   // 获取工作区根路径
-  const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
-    ? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined;
+  const rootPath =
+    vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
+      ? vscode.workspace.workspaceFolders[0].uri.fsPath
+      : undefined;
 
   // 创建依赖节点提供者实例
   const nodeDependenciesProvider = new DepNodeProvider(rootPath);
-  
+
   // 注册树数据提供者，将视图ID与数据提供者关联
   vscode.window.registerTreeDataProvider('vssm-tool-node-dependencies', nodeDependenciesProvider);
-  
+
   // 注册刷新命令
   vscode.commands.registerCommand('vssm-tool-node-dependencies.refreshEntry', () => nodeDependenciesProvider.refresh());
-  
+
   // 注册打开npm页面命令
-  vscode.commands.registerCommand('vssm-tool-node-dependencies.openPackageOnNpm', moduleName => 
+  vscode.commands.registerCommand('vssm-tool-node-dependencies.openPackageOnNpm', (moduleName) =>
     vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(`https://www.npmjs.com/package/${moduleName}`))
   );
-  
+
   // 注册编辑条目命令（当前仅显示信息）
-  vscode.commands.registerCommand('vssm-tool-node-dependencies-item.editEntry', (node: Dependency) => 
+  vscode.commands.registerCommand('vssm-tool-node-dependencies-item.editEntry', (node: Dependency) =>
     vscode.window.showInformationMessage(`Successfully called edit entry on ${node.label}.`)
   );
-  
+
   // 注册添加条目命令（当前仅显示信息）
-  vscode.commands.registerCommand('vssm-tool-node-dependencies.addEntry', () => 
+  vscode.commands.registerCommand('vssm-tool-node-dependencies.addEntry', () =>
     vscode.window.showInformationMessage(`Successfully called add entry.`)
   );
-  
+
   // 注册删除条目命令（当前仅显示信息）
-  vscode.commands.registerCommand('vssm-tool-node-dependencies-item.deleteEntry', (node: Dependency) => 
+  vscode.commands.registerCommand('vssm-tool-node-dependencies-item.deleteEntry', (node: Dependency) =>
     vscode.window.showInformationMessage(`Successfully called delete entry on ${node.label}.`)
   );
 

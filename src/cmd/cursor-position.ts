@@ -35,7 +35,9 @@ function handleGetCursorPosition() {
   const position = editor.selection.active;
   const adjustedColumn = getAdjustedColumn(editor, position);
 
-  vscode.window.showInformationMessage(`行: ${position.line + 1}, 列: ${adjustedColumn + 1} (原始列: ${position.character + 1})`);
+  vscode.window.showInformationMessage(
+    `行: ${position.line + 1}, 列: ${adjustedColumn + 1} (原始列: ${position.character + 1})`
+  );
 }
 
 /**

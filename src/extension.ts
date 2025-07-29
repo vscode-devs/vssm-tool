@@ -3,16 +3,26 @@
 import * as vscode from 'vscode';
 import { registerHelloWorldCommand } from './cmd/helloworld';
 import { registerCursorPositionCommand } from './cmd/cursor-position';
-import { registerGenerateConfigCommand, GenerateEditorConfigCommand, GenerateWorkspaceConfigCommand, GenerateClangFormatCommand } from './cmd/generateConfigs';
+import {
+  registerGenerateConfigCommand,
+  GenerateEditorConfigCommand,
+  GenerateWorkspaceConfigCommand,
+  GenerateClangFormatCommand
+} from './cmd/generateConfigs';
 import { registerNpmRunTaskCommand } from './cmd/npm-run-task';
-import { registerAddToIgnoreCommand, AddToPrettierIgnoreCommand, AddToGitIgnoreCommand, AddToVScodeIgnoreCommand } from './cmd/addToIgnore';
+import {
+  registerAddToIgnoreCommand,
+  AddToPrettierIgnoreCommand,
+  AddToGitIgnoreCommand,
+  AddToVScodeIgnoreCommand
+} from './cmd/addToIgnore';
 import { registerMarkdownHoverProvider } from './language-features/markdownHover';
 import { registerPackageLinkProvider } from './language-features/packageLinkProvider';
-import { registerCommandsView } from './tree-views/vssm-tool-cmd';
 import { registerConfigView } from './tree-views/vssm-tool-config';
-import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-dependencies';
-import { registerFixedDataView } from './tree-views/fixed-data-provider';
 import { registerDefaultTemplateView } from './tree-views/default-template-view';
+import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-dependencies';
+import { registerCommandsView } from './tree-views/vssm-tool-cmd';
+import { registerFixedDataView } from './tree-views/fixed-data-provider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -69,24 +79,24 @@ export function activate(context: vscode.ExtensionContext) {
       register: registerPackageLinkProvider,
       enabled: true
     },
-    commandsView: {
-      register: registerCommandsView,
-      enabled: true
-    },
     configView: {
       register: registerConfigView,
+      enabled: true
+    },
+    defaultTemplateView: {
+      register: registerDefaultTemplateView,
       enabled: true
     },
     nodeDependenciesView: {
       register: registerNodeDependenciesView,
       enabled: true
     },
-    fixedDataView: {
-      register: registerFixedDataView,
+    commandsView: {
+      register: registerCommandsView,
       enabled: true
     },
-    defaultTemplateView: {
-      register: registerDefaultTemplateView,
+    fixedDataView: {
+      register: registerFixedDataView,
       enabled: true
     }
   };

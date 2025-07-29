@@ -19,7 +19,10 @@ export class PackageLinkProvider implements vscode.DocumentLinkProvider {
    * @param {vscode.CancellationToken} token - 取消令牌，用于在操作被取消时提前返回
    * @returns {vscode.ProviderResult<vscode.DocumentLink[]>} 返回文档链接数组，包含所有可点击的包名链接
    */
-  provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.DocumentLink[]> {
+  provideDocumentLinks(
+    document: vscode.TextDocument,
+    token: vscode.CancellationToken
+  ): vscode.ProviderResult<vscode.DocumentLink[]> {
     // 只处理package.json文件，如果不是则返回空数组
     if (path.basename(document.fileName) !== 'package.json') {
       return [];
@@ -157,19 +160,23 @@ export function registerPackageLinkProvider(context: vscode.ExtensionContext) {
   // 创建链接提供者实例
   const provider = new PackageLinkProvider();
   // 注册到JSON语言
-  context.subscriptions.push(vscode.languages.registerDocumentLinkProvider(
-    { language: 'json', pattern: '**/package.json' },
-    provider
-  ));
+  context.subscriptions.push(
+    vscode.languages.registerDocumentLinkProvider({ language: 'json', pattern: '**/package.json' }, provider)
+  );
 
   // 监听活动编辑器变化事件
-  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
-    if (editor && editor.document.fileName.includes('node_modules') &&
-      editor.document.fileName.endsWith('README.md')) {
-      // 在资源管理器中显示当前文件
-      vscode.commands.executeCommand('revealInExplorer', editor.document.uri);
-    }
-  }));
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (
+        editor &&
+        editor.document.fileName.includes('node_modules') &&
+        editor.document.fileName.endsWith('README.md')
+      ) {
+        // 在资源管理器中显示当前文件
+        vscode.commands.executeCommand('revealInExplorer', editor.document.uri);
+      }
+    })
+  );
 
   return providerName;
 }

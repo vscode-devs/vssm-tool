@@ -50,7 +50,9 @@ export class DefaultTemplateProvider implements vscode.TreeDataProvider<Template
    * @brief 事件发射器，用于通知树视图数据已更改
    * @description 当需要刷新树视图时，调用fire()方法触发此事件。
    */
-  private _onDidChangeTreeData: vscode.EventEmitter<TemplateNode | undefined | void> = new vscode.EventEmitter<TemplateNode | undefined | void>();
+  private _onDidChangeTreeData: vscode.EventEmitter<TemplateNode | undefined | void> = new vscode.EventEmitter<
+    TemplateNode | undefined | void
+  >();
 
   /**
    * @brief 树视图数据更改事件
@@ -65,7 +67,7 @@ export class DefaultTemplateProvider implements vscode.TreeDataProvider<Template
   refresh(): void {
     this.scanTemplates();
     this._onDidChangeTreeData.fire();
-    console.log("Default template view refreshed!");
+    console.log('Default template view refreshed!');
   }
 
   /**
@@ -75,7 +77,7 @@ export class DefaultTemplateProvider implements vscode.TreeDataProvider<Template
   private scanTemplates(): void {
     // 清空现有模板列表
     this.templates = [];
-    
+
     try {
       // 获取src目录路径
       // __filename 是当前文件的完整路径 (src/tree-views/default-template-view.ts)
@@ -85,20 +87,17 @@ export class DefaultTemplateProvider implements vscode.TreeDataProvider<Template
       // 2. __filename + '..' = d:/sumu_blog/vssm-tool/src/tree-views/
       // 3. __filename + '..' + '..' = d:/sumu_blog/vssm-tool/src/
       const srcDir = path.join(__filename, '..', '..');
-      
+
       // 读取src目录中的文件
       const files = fs.readdirSync(srcDir);
 
       // 过滤出以DefaultTemplate开头的文件
-      const templateFiles = files.filter(file =>
-        file.startsWith('DefaultTemplate') &&
-        fs.statSync(path.join(srcDir, file)).isFile()
+      const templateFiles = files.filter(
+        (file) => file.startsWith('DefaultTemplate') && fs.statSync(path.join(srcDir, file)).isFile()
       );
 
       // 为每个模板文件创建节点
-      this.templates = templateFiles.map(file =>
-        new TemplateNode(file, path.join(srcDir, file))
-      );
+      this.templates = templateFiles.map((file) => new TemplateNode(file, path.join(srcDir, file)));
     } catch (error) {
       console.error('Error scanning template files:', error);
     }
@@ -173,7 +172,9 @@ export function registerDefaultTemplateView(context: vscode.ExtensionContext): s
   vscode.commands.registerCommand('vssm-tool-default-template.refreshEntry', () => templateProvider.refresh());
 
   // 注册打开模板文件命令
-  vscode.commands.registerCommand('vssm-tool-default-template.openTemplate', (node: TemplateNode) => templateProvider.openTemplate(node));
+  vscode.commands.registerCommand('vssm-tool-default-template.openTemplate', (node: TemplateNode) =>
+    templateProvider.openTemplate(node)
+  );
 
   // 返回视图ID
   return 'vssm-tool-default-template';

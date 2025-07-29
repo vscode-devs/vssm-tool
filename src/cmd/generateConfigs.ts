@@ -183,7 +183,14 @@ export const GenerateEditorConfigCommand: GenerateCommand = {
     }
 
     // 构建.editorconfig文件内容
-    const settingsLines = ['# EditorConfig is awesome: https://EditorConfig.org', '', '# top-most EditorConfig file', 'root = true', '', '[*]'];
+    const settingsLines = [
+      '# EditorConfig is awesome: https://EditorConfig.org',
+      '',
+      '# top-most EditorConfig file',
+      'root = true',
+      '',
+      '[*]'
+    ];
 
     /**
      * @brief 添加配置项到内容数组的辅助函数

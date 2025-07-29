@@ -256,6 +256,11 @@
       ],
       "view/title": [
         {
+          "command": "vssm-tool-default-template.refreshEntry",
+          "when": "view == vssm-tool-default-template",
+          "group": "navigation"
+        },
+        {
           "command": "vssm-tool-node-dependencies.refreshEntry",
           "when": "view == vssm-tool-node-dependencies",
           "group": "navigation"
@@ -272,11 +277,6 @@
         {
           "command": "vssm-tool-fixed-data.addEntry",
           "when": "view == vssm-tool-fixed-data",
-          "group": "navigation"
-        },
-        {
-          "command": "vssm-tool-default-template.refreshEntry",
-          "when": "view == vssm-tool-default-template",
           "group": "navigation"
         }
       ],
@@ -327,14 +327,15 @@
     "views": {
       "VSSM-TOOL": [
         {
-          "id": "vssm-tool-cmd",
-          "name": "cmd",
-          "icon": "$(browser)"
-        },
-        {
           "id": "vssm-tool-config",
           "name": "config",
           "icon": "$(browser)"
+        },
+        {
+          "id": "vssm-tool-default-template",
+          "name": "Default Templates",
+          "icon": "$(file)",
+          "contextualTitle": "Default Templates"
         },
         {
           "id": "vssm-tool-node-dependencies",
@@ -343,16 +344,15 @@
           "contextualTitle": "Package Explorer"
         },
         {
+          "id": "vssm-tool-cmd",
+          "name": "cmd",
+          "icon": "$(browser)"
+        },
+        {
           "id": "vssm-tool-fixed-data",
           "name": "fixed data provider",
           "icon": "resources/icon/test-style-01.svg",
           "contextualTitle": "Tree View Test"
-        },
-        {
-          "id": "vssm-tool-default-template",
-          "name": "Default Templates",
-          "icon": "$(file)",
-          "contextualTitle": "Default Templates"
         }
       ]
     }

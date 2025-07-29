@@ -65,7 +65,9 @@ async function getTaskSource(): Promise<TaskSource> {
  * @async
  * @returns {Promise<vscode.QuickPickItem[]>} 返回脚本选择项数组
  */
-async function getPackageJsonScripts(workspaceFolders: readonly vscode.WorkspaceFolder[]): Promise<vscode.QuickPickItem[]> {
+async function getPackageJsonScripts(
+  workspaceFolders: readonly vscode.WorkspaceFolder[]
+): Promise<vscode.QuickPickItem[]> {
   // 构建package.json完整路径
   const packageJsonPath = path.join(workspaceFolders[0].uri.fsPath, 'package.json');
   // 检查文件是否存在

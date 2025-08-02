@@ -134,6 +134,21 @@ export class VSCodeSettingsProvider implements vscode.TreeDataProvider<VSCodeSet
         ));
       }
 
+      // 3.1. 本地Windows用户设置 (仅在远程会话中显示提示)
+      if (vscode.env.remoteName) {
+        const localWindowsSettingsNode = new VSCodeSettingsNode(
+          'Local Windows User Settings (Not Accessible)',
+          '', // 空路径，因为无法直接访问
+          false,
+          'Cannot access local Windows user settings directly from a remote SSH session.'
+        );
+        localWindowsSettingsNode.iconPath = new vscode.ThemeIcon('warning'); // 使用警告图标
+        localWindowsSettingsNode.contextValue = 'inaccessible-settings'; // 特殊上下文值
+        // 移除默认的打开文件命令，因为它无法打开
+        localWindowsSettingsNode.command = undefined;
+        this.settingsNodes.push(localWindowsSettingsNode);
+      }
+
       // 4. 工作区设置
       const workspaceSettings = this.getWorkspaceSettings();
       if (workspaceSettings.length > 0) {

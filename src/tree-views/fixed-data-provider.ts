@@ -24,22 +24,22 @@ export class FixedDataNode extends vscode.TreeItem {
   ) {
     super(label, collapsibleState);
 
-    // 为有子节点的父节点设置tag-style-01.svg图标
+    // 为有子节点的父节点设置tag-01.svg图标
     if (children && children.length > 0) {
       this.iconPath = {
         light: vscode.Uri.file(
-          path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'tag-style-01.svg')
+          path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'tag-01.svg')
         ),
-        dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'tag-style-01.svg'))
+        dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'tag-01.svg'))
       };
       // 为父节点设置悬停提示
       this.tooltip = `tag: ${this.label}`;
     } else {
       this.iconPath = {
         light: vscode.Uri.file(
-          path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'tag-style-02.svg')
+          path.join(__filename, '..', '..', '..', 'resources', 'icon', 'light', 'tag-02.svg')
         ),
-        dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'tag-style-02.svg'))
+        dark: vscode.Uri.file(path.join(__filename, '..', '..', '..', 'resources', 'icon', 'dark', 'tag-02.svg'))
       };
       // 为子节点设置悬停提示
       this.tooltip = `Item: ${this.label}`;

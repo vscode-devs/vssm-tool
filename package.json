@@ -63,6 +63,14 @@
         "title": "add to .vscodeignore"
       },
       {
+        "command": "vssm-tool-vscode-settings.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/icon/light/refresh.svg",
+          "dark": "resources/icon/dark/refresh.svg"
+        }
+      },
+      {
         "command": "vssm-tool-node-dependencies.refreshEntry",
         "title": "Refresh",
         "icon": {
@@ -261,6 +269,11 @@
           "group": "navigation"
         },
         {
+          "command": "vssm-tool-vscode-settings.refreshEntry",
+          "when": "view == vssm-tool-vscode-settings",
+          "group": "navigation"
+        },
+        {
           "command": "vssm-tool-node-dependencies.refreshEntry",
           "when": "view == vssm-tool-node-dependencies",
           "group": "navigation"
@@ -336,6 +349,12 @@
           "name": "Default Templates",
           "icon": "$(file)",
           "contextualTitle": "Default Templates"
+        },
+        {
+          "id": "vssm-tool-vscode-settings",
+          "name": "vscode-settings",
+          "icon": "$(settings-gear)",
+          "contextualTitle": "VSCode Settings"
         },
         {
           "id": "vssm-tool-node-dependencies",

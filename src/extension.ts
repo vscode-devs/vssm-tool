@@ -23,6 +23,7 @@ import { registerDefaultTemplateView } from './tree-views/default-template-view'
 import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-dependencies';
 import { registerCommandsView } from './tree-views/vssm-tool-cmd';
 import { registerFixedDataView } from './tree-views/fixed-data-provider';
+import { registerVSCodeSettingsView } from './tree-views/vscode-settings-view';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -97,6 +98,10 @@ export function activate(context: vscode.ExtensionContext) {
     },
     fixedDataView: {
       register: registerFixedDataView,
+      enabled: true
+    },
+    vscodeSettingsView: {
+      register: registerVSCodeSettingsView,
       enabled: true
     }
   };

@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { logToVssmToolChannel, logErrorToVssmToolChannel } from './helpers/utils';
 import { registerHelloWorldCommand } from './cmd/helloworld';
 import { registerCursorPositionCommand } from './cmd/cursor-position';
 import {
@@ -32,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "vssm-tool" is now active!');
+  logToVssmToolChannel('Congratulations, your extension "vssm-tool" is now active!');
 
   // Define all commands with their registration functions and enabled status
   const commands = {

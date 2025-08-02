@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-
+import {logToVssmToolChannel } from '../helpers/utils'
 /**
  * @class TemplateNode
  * @brief 模板文件树节点类
@@ -67,7 +67,8 @@ export class DefaultTemplateProvider implements vscode.TreeDataProvider<Template
   refresh(): void {
     this.scanTemplates();
     this._onDidChangeTreeData.fire();
-    console.log('Default template view refreshed!');
+    // console.log('Default template view refreshed!');
+    logToVssmToolChannel('Default template view refreshed!');
   }
 
   /**

@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
+import { logToVssmToolChannel } from '../helpers/utils';
 
 /**
  * @brief VSCode设置文件节点类
@@ -86,7 +87,7 @@ export class VSCodeSettingsProvider implements vscode.TreeDataProvider<VSCodeSet
   refresh(): void {
     this.scanSettingsFiles();
     this._onDidChangeTreeData.fire();
-    console.log('VSCode settings view refreshed!');
+    logToVssmToolChannel('VSCode settings view refreshed!');
   }
 
   /**

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import {logToVssmToolChannel } from '../helpers/utils'
 
 /**
  * @class FixedDataNode
@@ -76,7 +77,8 @@ export class FixedDataProvider implements vscode.TreeDataProvider<FixedDataNode>
    */
   refresh(): void {
     this._onDidChangeTreeData.fire();
-    console.log('The vssm-tool-fixed-data.refreshEntry command is executed!');
+    // console.log('The vssm-tool-fixed-data.refreshEntry command is executed!');
+    logToVssmToolChannel('The vssm-tool-fixed-data.refreshEntry command is executed!');
   }
 
   /**

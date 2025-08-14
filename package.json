@@ -8,7 +8,7 @@
     "demo"
   ],
   "publisher": "ms-vs-extensions",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "icon": "resources/images/logo.png",
   "engines": {
     "vscode": "^1.98.0"

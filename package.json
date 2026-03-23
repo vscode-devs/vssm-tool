@@ -141,6 +141,14 @@
           "light": "resources/icon/light/refresh.svg",
           "dark": "resources/icon/dark/refresh.svg"
         }
+      },
+      {
+        "command": "vssm-tool.initProject",
+        "title": "Init Project"
+      },
+      {
+        "command": "vssm-tool.initProject.c-vscode",
+        "title": "C (VSCode)"
       }
     ],
     "configuration": {
@@ -207,6 +215,10 @@
         "id": "vssm-tool.menu",
         "label": "VSSM Tool",
         "icon": "$(extensions)"
+      },
+      {
+        "id": "vssm-tool.initProject.submenu",
+        "label": "Init Project"
       }
     ],
     "menus": {
@@ -260,6 +272,16 @@
           "command": "vssm-tool.generateClangFormat",
           "group": "3_commands@3",
           "when": "explorerResourceIsFolder"
+        },
+        {
+          "submenu": "vssm-tool.initProject.submenu",
+          "group": "4_init@1"
+        }
+      ],
+      "vssm-tool.initProject.submenu": [
+        {
+          "command": "vssm-tool.initProject.c-vscode",
+          "group": "1_types@1"
         }
       ],
       "view/title": [
@@ -380,7 +402,7 @@
     "vscode:prepublish": "npm run compile && npm run postbuild",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "postbuild": "shx mkdir -p out && shx cp -f src/DefaultTemplate.* out/",
+    "postbuild": "shx mkdir -p out && shx cp -f src/DefaultTemplate.* out/ && shx cp -rf src/template out/template",
     "clean": "shx rm -rf out",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",

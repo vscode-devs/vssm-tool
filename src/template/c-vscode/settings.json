@@ -1,0 +1,23 @@
+{
+	// llvm-vs-code-extensions.vscode-clangd
+    "clangd.arguments": [
+        "--log=verbose",
+        "--clang-tidy",
+        "--clang-tidy-checks=cppcoreguidelines-*,performance-*,bugprone-*,portability-*,modernize-*,google-*",
+        "--compile-commands-dir=${workspaceFolder}",
+        "--completion-style=detailed",
+        "--background-index",
+        "-j=16",
+        "--all-scopes-completion",
+        "--header-insertion-decorators",
+        "--header-insertion=never",
+        "--pch-storage=disk",
+        "--function-arg-placeholders=false",
+        "--cross-file-rename",
+        "--enable-config",
+        "--fallback-style=webkit",
+        "--ranking-model=heuristics",
+        "--pretty",
+    ],
+    "clangd.path": "/usr/bin/clangd",
+}

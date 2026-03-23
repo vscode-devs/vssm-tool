@@ -25,6 +25,7 @@ import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-depend
 import { registerCommandsView } from './tree-views/vssm-tool-cmd';
 import { registerFixedDataView } from './tree-views/fixed-data-provider';
 import { registerVSCodeSettingsView } from './tree-views/vscode-settings-view';
+import { registerInitProjectCommand } from './cmd/initProject';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -103,6 +104,10 @@ export function activate(context: vscode.ExtensionContext) {
     },
     vscodeSettingsView: {
       register: registerVSCodeSettingsView,
+      enabled: true
+    },
+    initProject: {
+      register: registerInitProjectCommand,
       enabled: true
     }
   };

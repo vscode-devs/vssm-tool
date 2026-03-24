@@ -4,7 +4,8 @@ import * as fs from 'fs';
 import { logToVssmToolChannel, logErrorToVssmToolChannel } from '../helpers/utils';
 
 const projectTypes = [
-  { label: 'C (VSCode)', value: 'c-vscode', description: 'Initialize a C project with VSCode configuration' }
+  { label: 'C (VSCode)', value: 'c-vscode', description: 'Initialize a C project with VSCode configuration' },
+  { label: 'CNB', value: 'cnb', description: 'Initialize CNB CI/CD configuration' }
 ];
 
 /**
@@ -69,7 +70,11 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
       return;
     }
 
-    initProject(context, selected.value, selected.label);
+    if (selected.value === 'cnb') {
+      initCnbProject(context, selected.label);
+    } else {
+      initProject(context, selected.value, selected.label);
+    }
   });
   context.subscriptions.push(initDisposable);
 
@@ -77,12 +82,86 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
   for (const pt of projectTypes) {
     const cmdId = `vssm-tool.initProject.${pt.value}`;
     const disposable = vscode.commands.registerCommand(cmdId, () => {
-      initProject(context, pt.value, pt.label);
+      if (pt.value === 'cnb') {
+        initCnbProject(context, pt.label);
+      } else {
+        initProject(context, pt.value, pt.label);
+      }
     });
     context.subscriptions.push(disposable);
   }
 
   return 'vssm-tool.initProject';
+}
+
+/**
+ * @brief 初始化CNB项目配置
+ * @details 将扩展内置模板目录src/template/cnb/下的所有文件（不包含cnb这一层目录）拷贝到工作区根目录。
+ *          若目标位置已存在同名文件则跳过。
+ * @param context VS Code扩展上下文，用于获取扩展路径等信息
+ * @param templateLabel 项目类型的显示标签，用于日志和提示信息
+ * @return 无返回值
+ */
+function initCnbProject(context: vscode.ExtensionContext, templateLabel: string): void {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders || workspaceFolders.length === 0) {
+    vscode.window.showErrorMessage('No workspace folder is open. Please open a folder first.');
+    return;
+  }
+
+  const targetRoot = workspaceFolders[0].uri.fsPath;
+  const templateDir = path.resolve(__dirname, '..', 'template', 'cnb');
+
+  if (!fs.existsSync(templateDir)) {
+    logErrorToVssmToolChannel(`Template directory not found: ${templateDir}`);
+    vscode.window.showErrorMessage(`Template "cnb" not found in extension.`);
+    return;
+  }
+
+  try {
+    const entries = fs.readdirSync(templateDir);
+    let skipped = false;
+    let copied = false;
+
+    for (const entry of entries) {
+      const srcPath = path.join(templateDir, entry);
+      const destPath = path.join(targetRoot, entry);
+
+      if (fs.existsSync(destPath)) {
+        skipped = true;
+        continue;
+      }
+
+      const stat = fs.statSync(srcPath);
+      if (stat.isDirectory()) {
+        copyDirSync(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+      copied = true;
+    }
+
+    // Copy DefaultTemplate.editorconfig as .editorconfig
+    const editorconfigSrc = path.resolve(__dirname, '..', 'DefaultTemplate.editorconfig');
+    const editorconfigDest = path.join(targetRoot, '.editorconfig');
+    if (fs.existsSync(editorconfigSrc) && !fs.existsSync(editorconfigDest)) {
+      fs.copyFileSync(editorconfigSrc, editorconfigDest);
+      copied = true;
+    } else if (fs.existsSync(editorconfigDest)) {
+      skipped = true;
+    }
+
+    if (copied) {
+      logToVssmToolChannel(`Successfully initialized ${templateLabel} project in: ${targetRoot}`);
+      vscode.window.showInformationMessage(`${templateLabel} project initialized successfully!`);
+    } else if (skipped) {
+      vscode.window.showWarningMessage(`${templateLabel} files already exist, skipping initialization.`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logErrorToVssmToolChannel(`Failed to initialize CNB project: ${message}`);
+    vscode.window.showErrorMessage(`Failed to initialize CNB project: ${message}`);
+  }
 }
 
 /**

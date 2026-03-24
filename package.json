@@ -149,6 +149,10 @@
       {
         "command": "vssm-tool.initProject.c-vscode",
         "title": "C (VSCode)"
+      },
+      {
+        "command": "vssm-tool.initProject.cnb",
+        "title": "CNB"
       }
     ],
     "configuration": {
@@ -282,6 +286,10 @@
         {
           "command": "vssm-tool.initProject.c-vscode",
           "group": "1_types@1"
+        },
+        {
+          "command": "vssm-tool.initProject.cnb",
+          "group": "1_types@2"
         }
       ],
       "view/title": [

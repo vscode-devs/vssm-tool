@@ -9,15 +9,14 @@ const projectTypes = [
 ];
 
 /**
- * @brief 初始化指定类型的项目工程
- * @details 将扩展内置模板目录src/template/<templateValue>/下的所有文件及目录直接拷贝到工作区根目录。
+ * @brief 初始化C语言工程
+ * @details 将扩展内置模板目录src/template/c-vscode/下的所有文件及目录直接拷贝到工作区根目录。
  *          若目标位置已存在同名文件或目录则跳过。
  * @param context VS Code扩展上下文，用于获取扩展路径等信息
- * @param templateValue 模板目录名称，对应src/template/下的子目录名（如"c-vscode"）
  * @param templateLabel 项目类型的显示标签，用于日志和提示信息（如"C (VSCode)"）
  * @return 无返回值
  */
-function initProject(context: vscode.ExtensionContext, templateValue: string, templateLabel: string): void {
+function initCVscodeProject(context: vscode.ExtensionContext, templateLabel: string): void {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders || workspaceFolders.length === 0) {
     vscode.window.showErrorMessage('No workspace folder is open. Please open a folder first.');
@@ -25,11 +24,11 @@ function initProject(context: vscode.ExtensionContext, templateValue: string, te
   }
 
   const targetRoot = workspaceFolders[0].uri.fsPath;
-  const templateDir = path.resolve(__dirname, '..', 'template', templateValue);
+  const templateDir = path.resolve(__dirname, '..', 'template', 'c-vscode');
 
   if (!fs.existsSync(templateDir)) {
     logErrorToVssmToolChannel(`Template directory not found: ${templateDir}`);
-    vscode.window.showErrorMessage(`Template "${templateValue}" not found in extension.`);
+    vscode.window.showErrorMessage(`Template "c-vscode" not found in extension.`);
     return;
   }
 
@@ -92,7 +91,7 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
     if (selected.value === 'cnb') {
       initCnbProject(context, selected.label);
     } else {
-      initProject(context, selected.value, selected.label);
+      initCVscodeProject(context, selected.label);
     }
   });
   context.subscriptions.push(initDisposable);
@@ -104,7 +103,7 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
       if (pt.value === 'cnb') {
         initCnbProject(context, pt.label);
       } else {
-        initProject(context, pt.value, pt.label);
+        initCVscodeProject(context, pt.label);
       }
     });
     context.subscriptions.push(disposable);

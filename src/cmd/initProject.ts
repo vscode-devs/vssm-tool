@@ -10,8 +10,8 @@ const projectTypes = [
 
 /**
  * @brief 初始化指定类型的项目工程
- * @details 检查工作区根目录下是否已存在.vscode目录，若已存在则跳过；
- *          否则从扩展内置模板目录拷贝对应项目类型的模板文件到.vscode目录。
+ * @details 将扩展内置模板目录src/template/<templateValue>/下的所有文件及目录直接拷贝到工作区根目录。
+ *          若目标位置已存在同名文件或目录则跳过。
  * @param context VS Code扩展上下文，用于获取扩展路径等信息
  * @param templateValue 模板目录名称，对应src/template/下的子目录名（如"c-vscode"）
  * @param templateLabel 项目类型的显示标签，用于日志和提示信息（如"C (VSCode)"）
@@ -26,12 +26,6 @@ function initProject(context: vscode.ExtensionContext, templateValue: string, te
 
   const targetRoot = workspaceFolders[0].uri.fsPath;
   const templateDir = path.resolve(__dirname, '..', 'template', templateValue);
-  const targetDir = path.join(targetRoot, '.vscode');
-
-  if (fs.existsSync(targetDir)) {
-    vscode.window.showWarningMessage(`.vscode directory already exists, skipping initialization.`);
-    return;
-  }
 
   if (!fs.existsSync(templateDir)) {
     logErrorToVssmToolChannel(`Template directory not found: ${templateDir}`);
@@ -40,9 +34,34 @@ function initProject(context: vscode.ExtensionContext, templateValue: string, te
   }
 
   try {
-    copyDirSync(templateDir, targetDir);
-    logToVssmToolChannel(`Successfully initialized ${templateLabel} project in: ${targetRoot}`);
-    vscode.window.showInformationMessage(`${templateLabel} project initialized successfully!`);
+    const entries = fs.readdirSync(templateDir);
+    let skipped = false;
+    let copied = false;
+
+    for (const entry of entries) {
+      const srcPath = path.join(templateDir, entry);
+      const destPath = path.join(targetRoot, entry);
+
+      if (fs.existsSync(destPath)) {
+        skipped = true;
+        continue;
+      }
+
+      const stat = fs.statSync(srcPath);
+      if (stat.isDirectory()) {
+        copyDirSync(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+      copied = true;
+    }
+
+    if (copied) {
+      logToVssmToolChannel(`Successfully initialized ${templateLabel} project in: ${targetRoot}`);
+      vscode.window.showInformationMessage(`${templateLabel} project initialized successfully!`);
+    } else if (skipped) {
+      vscode.window.showWarningMessage(`${templateLabel} files already exist, skipping initialization.`);
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     logErrorToVssmToolChannel(`Failed to initialize project: ${message}`);

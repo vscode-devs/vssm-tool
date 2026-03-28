@@ -74,10 +74,12 @@ branch:
             options:
               - name: CNB 官方默认远程开发环境
                 value: cnbcool/default-dev-env
+              - name: 苏木 ubuntu-22.04 开发环境
+                value: docker.cnb.cool/sumu.k/docker-learning/ubuntu-22.04
+              - name: 苏木 ubuntu-24.04 开发环境
+                value: docker.cnb.cool/sumu.k/docker-learning/ubuntu-24.04
               - name: 苏木 node-env 开发环境
                 value: docker.cnb.cool/sumu.k/docker-learning/node-24.x
-              - name: 苏木 embedded-env 开发环境
-                value: docker.cnb.cool/sumu.k/docker-learning/embedded-env
               - name: 苏木 go-1.26 开发环境
                 value: docker.cnb.cool/sumu.k/docker-learning/go-1.26
           custom_image_url:

@@ -24,6 +24,8 @@ $:
         image: docker.cnb.cool/sumu.k/docker-learning/node-24.x
         # build:
         #   dockerfile: Dockerfile
+      imports:
+        - https://cnb.cool/sumu.k/secret-key/-/blob/main/llm.yml
       services:
         - vscode
         - docker

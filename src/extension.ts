@@ -25,6 +25,7 @@ import { registerNodeDependenciesView } from './tree-views/vssm-tool-node-depend
 import { registerCommandsView } from './tree-views/vssm-tool-cmd';
 import { registerFixedDataView } from './tree-views/fixed-data-provider';
 import { registerVSCodeSettingsView } from './tree-views/vscode-settings-view';
+import { registerSendToClaudeCodeCommand } from './cmd/send-to-claude';
 import { registerInitProjectCommand } from './cmd/initProject';
 
 // This method is called when your extension is activated
@@ -108,6 +109,10 @@ export function activate(context: vscode.ExtensionContext) {
     },
     initProject: {
       register: registerInitProjectCommand,
+      enabled: true
+    },
+    sendToClaudeCode: {
+      register: registerSendToClaudeCodeCommand,
       enabled: true
     }
   };

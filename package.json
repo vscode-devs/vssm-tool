@@ -72,11 +72,6 @@
       {
         "command": "vssm-tool.initProject.cnb",
         "title": "CNB"
-      },
-      {
-        "command": "vssm-tool.sendToClaudeCode",
-        "title": "Send Selection to Claude Code",
-        "icon": "$(send)"
       }
     ],
     "configuration": {
@@ -175,11 +170,6 @@
           "when": "config.getCursorPosition.showMenuEntry"
         },
         {
-          "command": "vssm-tool.sendToClaudeCode",
-          "group": "1_commands@4",
-          "when": "editorHasSelection"
-        },
-        {
           "command": "vssm-tool.addToPrettierIgnore",
           "group": "2_commands@1"
         },
@@ -228,12 +218,6 @@
         "key": "ctrl+alt+f10",
         "mac": "cmd+alt+f10",
         "when": "editorTextFocus"
-      },
-      {
-        "command": "vssm-tool.sendToClaudeCode",
-        "key": "ctrl+alt+c",
-        "mac": "cmd+alt+c",
-        "when": "editorHasSelection"
       }
     ],
     "viewsContainers": {

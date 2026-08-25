@@ -26,7 +26,6 @@ import { registerCommandsView } from './views/commands';
 import { registerFixedDataProvider } from './views/fixed-data';
 import { registerVSCodeSettingsView } from './views/vscode-settings';
 import { registerChatWebviewView } from './views/chat-webview';
-import { registerSendToClaudeCodeCommand } from './cmd/send-to-claude';
 import { registerInitProjectCommand } from './cmd/initProject';
 
 // This method is called when your extension is activated
@@ -114,10 +113,6 @@ export function activate(context: vscode.ExtensionContext) {
     },
     initProject: {
       register: registerInitProjectCommand,
-      enabled: true
-    },
-    sendToClaudeCode: {
-      register: registerSendToClaudeCodeCommand,
       enabled: true
     }
   };

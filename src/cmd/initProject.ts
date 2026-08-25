@@ -10,7 +10,7 @@ const projectTypes = [
 
 /**
  * @brief C工程初始化的特殊目标名映射表
- * @details 键为工作区目标文件名，值为源文件路径（相对扩展 out 根目录）。
+ * @details 键为工作区目标文件名，值为源文件路径（相对扩展根目录）。
  *          列入此表的目标不从模板目录按原名拷贝，而是从指定源文件拷贝到目标名。
  *          - .clang-format：与单独生成命令共用 DefaultTemplate.clang-format，保证同一份C语言模板；
  *          - .gitignore：源文件命名为 C.gitignore，避免在扩展仓库中被当作忽略文件；
@@ -34,14 +34,14 @@ const cnbSpecialTargets: Record<string, string> = {
 
 /**
  * @brief 初始化C语言工程
- * @details 将扩展内置模板目录src/template/c-vscode/下的所有文件及目录拷贝到工作区根目录，
+ * @details 将扩展内置模板目录template/c-vscode/下的所有文件及目录拷贝到工作区根目录，
  *          其中 cVscodeSpecialTargets 中配置的目标名（.clang-format、.gitignore）做特殊处理，
  *          其余条目按同名拷贝。若目标位置已存在同名文件或目录则跳过。
- * @param context VS Code扩展上下文（保留以备扩展使用）
+ * @param extensionRoot 扩展安装根目录的绝对路径
  * @param templateLabel 项目类型的显示标签，用于日志和提示信息（如"C (VSCode)"）
  * @return 无返回值
  */
-function initCVscodeProject(context: vscode.ExtensionContext, templateLabel: string): void {
+function initCVscodeProject(extensionRoot: string, templateLabel: string): void {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders || workspaceFolders.length === 0) {
     vscode.window.showErrorMessage('No workspace folder is open. Please open a folder first.');
@@ -49,7 +49,7 @@ function initCVscodeProject(context: vscode.ExtensionContext, templateLabel: str
   }
 
   const targetRoot = workspaceFolders[0].uri.fsPath;
-  const templateDir = path.resolve(__dirname, '..', 'template', 'c-vscode');
+  const templateDir = path.join(extensionRoot, 'template', 'c-vscode');
 
   if (!fs.existsSync(templateDir)) {
     logErrorToVssmToolChannel(`Template directory not found: ${templateDir}`);
@@ -58,7 +58,7 @@ function initCVscodeProject(context: vscode.ExtensionContext, templateLabel: str
   }
 
   try {
-    const result = copyTemplateTree(templateDir, targetRoot, cVscodeSpecialTargets);
+    const result = copyTemplateTree(templateDir, targetRoot, extensionRoot, cVscodeSpecialTargets);
 
     if (result.copied) {
       logToVssmToolChannel(`Successfully initialized ${templateLabel} project in: ${targetRoot}`);
@@ -82,6 +82,9 @@ function initCVscodeProject(context: vscode.ExtensionContext, templateLabel: str
  * @return 返回主命令的命令ID字符串"vssm-tool.initProject"
  */
 export function registerInitProjectCommand(context: vscode.ExtensionContext): string {
+  // 解析扩展安装根目录，注入到各初始化函数（避免模块内部用 __dirname 反推位置）
+  const extensionRoot = context.extensionUri.fsPath;
+
   // Register the main init command (shows QuickPick)
   const initDisposable = vscode.commands.registerCommand('vssm-tool.initProject', async () => {
     const selected = await vscode.window.showQuickPick(projectTypes, {
@@ -94,9 +97,9 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
     }
 
     if (selected.value === 'cnb') {
-      initCnbProject(context, selected.label);
+      initCnbProject(extensionRoot, selected.label);
     } else {
-      initCVscodeProject(context, selected.label);
+      initCVscodeProject(extensionRoot, selected.label);
     }
   });
   context.subscriptions.push(initDisposable);
@@ -106,9 +109,9 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
     const cmdId = `vssm-tool.initProject.${pt.value}`;
     const disposable = vscode.commands.registerCommand(cmdId, () => {
       if (pt.value === 'cnb') {
-        initCnbProject(context, pt.label);
+        initCnbProject(extensionRoot, pt.label);
       } else {
-        initCVscodeProject(context, pt.label);
+        initCVscodeProject(extensionRoot, pt.label);
       }
     });
     context.subscriptions.push(disposable);
@@ -119,14 +122,14 @@ export function registerInitProjectCommand(context: vscode.ExtensionContext): st
 
 /**
  * @brief 初始化CNB项目配置
- * @details 将扩展内置模板目录src/template/cnb/下的所有文件（不包含cnb这一层目录）拷贝到工作区根目录，
+ * @details 将扩展内置模板目录template/cnb/下的所有文件（不包含cnb这一层目录）拷贝到工作区根目录，
  *          其中 cnbSpecialTargets 中配置的目标名（.editorconfig）从扩展内置 DefaultTemplate.editorconfig 拷贝，
  *          其余条目按同名拷贝。若目标位置已存在同名文件则跳过。
- * @param context VS Code扩展上下文（保留以备扩展使用）
+ * @param extensionRoot 扩展安装根目录的绝对路径
  * @param templateLabel 项目类型的显示标签，用于日志和提示信息
  * @return 无返回值
  */
-function initCnbProject(context: vscode.ExtensionContext, templateLabel: string): void {
+function initCnbProject(extensionRoot: string, templateLabel: string): void {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders || workspaceFolders.length === 0) {
     vscode.window.showErrorMessage('No workspace folder is open. Please open a folder first.');
@@ -134,7 +137,7 @@ function initCnbProject(context: vscode.ExtensionContext, templateLabel: string)
   }
 
   const targetRoot = workspaceFolders[0].uri.fsPath;
-  const templateDir = path.resolve(__dirname, '..', 'template', 'cnb');
+  const templateDir = path.join(extensionRoot, 'template', 'cnb');
 
   if (!fs.existsSync(templateDir)) {
     logErrorToVssmToolChannel(`Template directory not found: ${templateDir}`);
@@ -143,7 +146,7 @@ function initCnbProject(context: vscode.ExtensionContext, templateLabel: string)
   }
 
   try {
-    const result = copyTemplateTree(templateDir, targetRoot, cnbSpecialTargets);
+    const result = copyTemplateTree(templateDir, targetRoot, extensionRoot, cnbSpecialTargets);
 
     if (result.copied) {
       logToVssmToolChannel(`Successfully initialized ${templateLabel} project in: ${targetRoot}`);
@@ -173,21 +176,21 @@ interface TemplateCopyResult {
  * @brief 将模板目录拷贝到工作区根目录，支持特殊目标名映射
  * @details 先遍历 templateDir 下所有文件及目录，按原名拷贝到 targetRoot；
  *          再按 specialTargets 将指定源文件拷贝为目标名。
- *          specialTargets 的键为目标文件名，值为源文件路径（相对扩展 out 根目录）。
+ *          specialTargets 的键为目标文件名，值为源文件路径（相对扩展根目录）。
  *          若某特殊目标的源文件恰好位于 templateDir 内，则在常规遍历时自动跳过，避免重复拷贝。
  *          目标位置已存在同名文件或目录时跳过。
  * @param templateDir 模板目录的绝对路径
  * @param targetRoot 工作区根目录的绝对路径
- * @param specialTargets 特殊目标名到源文件（相对扩展 out 根目录）的映射表
+ * @param extensionRoot 扩展安装根目录的绝对路径（解析 specialTargets 源文件用）
+ * @param specialTargets 特殊目标名到源文件（相对扩展根目录）的映射表
  * @return 返回拷贝结果
  */
 function copyTemplateTree(
   templateDir: string,
   targetRoot: string,
+  extensionRoot: string,
   specialTargets: Record<string, string>
 ): TemplateCopyResult {
-  const extensionRoot = path.resolve(__dirname, '..');
-
   // 收集位于模板目录内的特殊源文件名，常规遍历时跳过这些条目（避免重复拷贝）
   const skipInTemplate = new Set<string>();
   for (const srcRel of Object.values(specialTargets)) {

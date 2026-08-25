@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Uri, window, workspace } from 'vscode';
 import { readFile as _readFile } from 'fs';
-import { resolve } from 'path';
 import { promisify } from 'util';
 
 const readFile = promisify(_readFile); // 将回调式文件读取转换为Promise形式
@@ -31,9 +30,10 @@ interface GenerateCommand {
  * @brief 生成配置文件的核心函数
  * @param {Uri} uri - 目标文件夹的URI
  * @param {GenerateCommand} config - 生成命令配置
+ * @param {string} defaultTemplatePath - 扩展内置默认模板的绝对路径（注册时已解析）
  * @async
  */
-async function generateConfig(uri: Uri, config: GenerateCommand) {
+async function generateConfig(uri: Uri, config: GenerateCommand, defaultTemplateAbsPath: string) {
   // 获取当前工作区根目录URI或右键选择的文件夹URI
   const workspaceUri = workspace.workspaceFolders?.[0].uri;
   const currentUri = uri || workspaceUri;
@@ -89,11 +89,10 @@ async function generateConfig(uri: Uri, config: GenerateCommand) {
     const wc = workspace.getConfiguration(`generate${config.templateName}`);
     const customTemplatePath = wc.get<string>('customTemplatePath'); // 用户自定义模板路径
     const template = wc.get<string>('template') || 'default'; // 选择的模板类型
-    const defaultTemplatePath = resolve(__dirname, '..', config.defaultTemplatePath); // 扩展内置模板路径
 
     let templateBuffer: Buffer;
     try {
-      let templatePath = defaultTemplatePath;
+      let templatePath = defaultTemplateAbsPath;
       // 处理模板路径选择逻辑
       if (customTemplatePath) {
         try {
@@ -102,11 +101,11 @@ async function generateConfig(uri: Uri, config: GenerateCommand) {
           templatePath = customTemplatePath;
         } catch {
           // 回退到默认模板或用户指定的模板
-          templatePath = /^default$/i.test(template) ? defaultTemplatePath : template;
+          templatePath = /^default$/i.test(template) ? defaultTemplateAbsPath : template;
         }
       } else {
         // 没有自定义路径时选择模板
-        templatePath = /^default$/i.test(template) ? defaultTemplatePath : template;
+        templatePath = /^default$/i.test(template) ? defaultTemplateAbsPath : template;
       }
       // 读取模板内容
       templateBuffer = await readFile(templatePath);
@@ -132,9 +131,11 @@ async function generateConfig(uri: Uri, config: GenerateCommand) {
  */
 export function registerGenerateConfigCommand(context: vscode.ExtensionContext, config: GenerateCommand): string {
   const commandName = config.commandName;
+  // 在注册时把内置模板相对路径解析为绝对路径并注入（config.defaultTemplatePath 保持相对语义）
+  const defaultTemplateAbsPath = context.asAbsolutePath(config.defaultTemplatePath);
   // 创建命令处理器
   const disposable = vscode.commands.registerCommand(commandName, (uri: Uri) => {
-    generateConfig(uri, config); // 调用核心生成函数
+    generateConfig(uri, config, defaultTemplateAbsPath); // 调用核心生成函数
   });
   // 注册命令到扩展上下文
   context.subscriptions.push(disposable);

@@ -5,8 +5,7 @@
  *          故改为实现 SnapshottableProvider：供 webview 取快照，点击配置项打开 VS Code 设置。
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as vscode from 'vscode';
 import { registerSnapshottableProvider, type SnapNode, type SnapshottableProvider } from './registry';
 
 /**
@@ -25,70 +24,73 @@ interface ConfigProperty {
 }
 
 /**
+ * @brief 清单数据读取器签名：返回 contributes.configuration.properties（无则空对象）
+ * @details 由注册处基于 ExtensionContext 构造，provider 不感知清单的物理来源。
+ */
+export type ConfigurationPropertiesReader = () => Record<string, unknown>;
+
+/**
  * @class ConfigViewProvider
  * @brief 配置视图提供者，实现 SnapshottableProvider 供 chat webview 消费
- * @details 从扩展 package.json 的 contributes.configuration.properties 加载配置项，
- *          按前缀分组，快照为两层 SnapNode[]，点击叶子节点按 key 打开 VS Code 设置。
+ * @details 通过注入的读取器从扩展清单（package.json 的 contributes.configuration.properties）
+ *          按前缀分组配置项，快照为两层 SnapNode[]，点击叶子节点按 key 打开 VS Code 设置。
  */
 export class ConfigViewProvider implements SnapshottableProvider {
   /** @brief 对应原 view 的 id（webview 导航/快照路由用） */
   public readonly viewId = 'vssm-tool-config';
 
+  /** @brief 注入的清单配置属性读取器 */
+  private readonly _readProperties: ConfigurationPropertiesReader;
+
   /** @brief 配置分组：前缀 → 配置项列表 */
   private configGroups: Map<string, ConfigProperty[]> = new Map();
 
   /**
-   * @brief 构造函数，初始化时加载配置
+   * @brief 构造函数，注入清单读取器并加载配置
    * @constructor
+   * @param readProperties 清单配置属性读取器
    */
-  constructor() {
-    this.loadConfigFromPackageJson();
+  constructor(readProperties: ConfigurationPropertiesReader) {
+    this._readProperties = readProperties;
+    this.loadConfig();
   }
 
   /**
-   * @brief 从 package.json 加载配置
+   * @brief 按前缀分组配置属性
    * @private
    */
-  private loadConfigFromPackageJson(): void {
+  private loadConfig(): void {
     try {
-      // 获取 package.json 文件路径（out/views → 根目录）
-      const packageJsonPath = path.join(__dirname, '../../package.json');
-      // 读取并解析 package.json 文件内容
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+      // 清空旧分组，避免重复刷新时累加
+      this.configGroups.clear();
+      const properties = this._readProperties();
+      // 遍历所有配置属性，按前缀分组
+      Object.entries(properties).forEach(([key, value]) => {
+        const prop = value as any;
+        const group = key.split('.')[0];
 
-      // 检查是否有 contributes.configuration.properties 配置
-      if (packageJson.contributes?.configuration?.properties) {
-        // 清空旧分组，避免重复刷新时累加
-        this.configGroups.clear();
-        const properties = packageJson.contributes.configuration.properties;
-        // 遍历所有配置属性，按前缀分组
-        Object.entries(properties).forEach(([key, value]) => {
-          const prop = value as any;
-          const group = key.split('.')[0];
-
-          if (!this.configGroups.has(group)) {
-            this.configGroups.set(group, []);
-          }
-          this.configGroups.get(group)?.push({
-            key,
-            type: prop.type,
-            default: prop.default,
-            description: prop.description
-          });
+        if (!this.configGroups.has(group)) {
+          this.configGroups.set(group, []);
+        }
+        this.configGroups.get(group)?.push({
+          key,
+          type: prop.type,
+          default: prop.default,
+          description: prop.description
         });
-      }
+      });
     } catch (error) {
       // 捕获并记录加载错误
-      console.error('Failed to load config from package.json:', error);
+      console.error('Failed to load config from extension manifest:', error);
     }
   }
 
   /**
-   * @brief 刷新：重新读取 package.json 配置（loadConfig 内部已 clear，可安全重复调用）
+   * @brief 刷新：重新从注入的读取器拉取配置并分组
    * @details 供 webview 刷新按钮调用。
    */
   refresh(): void {
-    this.loadConfigFromPackageJson();
+    this.loadConfig();
   }
 
   /**
@@ -121,12 +123,13 @@ export class ConfigViewProvider implements SnapshottableProvider {
 
 /**
  * @brief 注册配置视图到 webview 快照注册表
- * @param {unknown} _context - 扩展上下文（迁移后未使用，保留签名以契合 extension.ts 注册循环）
+ * @param {vscode.ExtensionContext} context - 扩展上下文（用于读取扩展清单）
  * @returns {string} viewId（供 extension.ts 去重注册使用）
  * @details 注意：不再注册原生 TreeView（其内容已搬进 webview）。
+ *          清单数据经 context.extension.packageJSON 注入，provider 不感知物理路径。
  */
-export function registerConfigView(_context: unknown): string {
-  const provider = new ConfigViewProvider();
-  registerSnapshottableProvider(provider);
-  return provider.viewId;
+export function registerConfigView(context: vscode.ExtensionContext): string {
+  const readProperties = () => context.extension.packageJSON?.contributes?.configuration?.properties ?? {};
+  registerSnapshottableProvider(new ConfigViewProvider(readProperties));
+  return 'vssm-tool-config';
 }

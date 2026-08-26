@@ -18,18 +18,16 @@ const FIXTURE_ROOT = path.join(__dirname, '..', '..', 'test-fixtures', 'demo-wor
 const RESOURCE_ROOT = path.join(__dirname, '..');
 /** @brief 仓库源码 src 目录 */
 const SRC_DIR = path.join(RESOURCE_ROOT, '..', 'src');
+/** @brief 共享默认模板目录（源码侧 / 运行时各一份） */
+const DEFAULT_TEMPLATES_SRC = path.join(SRC_DIR, 'template', 'default');
+const DEFAULT_TEMPLATES_OUT = path.join(RESOURCE_ROOT, 'template', 'default');
 
 /**
  * @brief 同步运行时模板资源到 out/（幂等）
- * @details 与 postbuild 行为一致：DefaultTemplate.* 拷入 out/，template 树整体拷入 out/template。
+ * @details 与 postbuild 行为一致：template 树整体拷入 out/template（含 default/ 下的 DefaultTemplate.*）。
  */
 function ensureRuntimeResources(): void {
   fs.cpSync(path.join(SRC_DIR, 'template'), path.join(RESOURCE_ROOT, 'template'), { recursive: true });
-  for (const name of fs.readdirSync(SRC_DIR)) {
-    if (name.startsWith('DefaultTemplate.')) {
-      fs.copyFileSync(path.join(SRC_DIR, name), path.join(RESOURCE_ROOT, name));
-    }
-  }
 }
 
 /** @brief 删除夹具内指定相对路径的产物（存在才删；带重试以规避 Windows 删除挂起句柄） */
@@ -90,7 +88,7 @@ suite('generateConfigs 命令', () => {
     await vscode.commands.executeCommand('vssm-tool.generateClangFormat', vscode.Uri.file(FIXTURE_ROOT));
 
     const generated = readFixture('.clang-format');
-    const template = fs.readFileSync(path.join(SRC_DIR, 'DefaultTemplate.clang-format'), 'utf-8');
+    const template = fs.readFileSync(path.join(DEFAULT_TEMPLATES_SRC, 'DefaultTemplate.clang-format'), 'utf-8');
     assert.strictEqual(generated, template, '生成内容应与 DefaultTemplate.clang-format 完全一致');
   });
 
@@ -117,7 +115,7 @@ suite('initProject 命令（c-vscode）', () => {
     this.timeout(30000);
     // 双保险：执行前再次同步资源并校验前置（区分"环境资源缺失"与"命令逻辑错误"）
     ensureRuntimeResources();
-    const clangTemplateSrc = path.join(RESOURCE_ROOT, 'DefaultTemplate.clang-format');
+    const clangTemplateSrc = path.join(DEFAULT_TEMPLATES_OUT, 'DefaultTemplate.clang-format');
     assert.ok(fs.existsSync(clangTemplateSrc), `前置失效：运行时模板缺失 ${clangTemplateSrc}`);
 
     await vscode.commands.executeCommand('vssm-tool.initProject.c-vscode');
@@ -131,7 +129,7 @@ suite('initProject 命令（c-vscode）', () => {
     assert.ok(fs.existsSync(clangFormatPath), `缺少 .clang-format；initProject 执行后夹具内容: [${listing}]`);
     assert.strictEqual(
       readFixture('.clang-format'),
-      fs.readFileSync(path.join(SRC_DIR, 'DefaultTemplate.clang-format'), 'utf-8'),
+      fs.readFileSync(path.join(DEFAULT_TEMPLATES_SRC, 'DefaultTemplate.clang-format'), 'utf-8'),
       '.clang-format 应来自 DefaultTemplate.clang-format'
     );
     assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'README.md')), '缺少 README.md');
@@ -157,7 +155,7 @@ suite('initProject 命令（cnb）', () => {
   test('初始化 CNB 工程模板（含特殊目标映射）', async function () {
     this.timeout(30000);
     // 前置校验：与 c-vscode 用例同理，区分环境问题与命令逻辑错误
-    const editorTemplateSrc = path.join(RESOURCE_ROOT, 'DefaultTemplate.editorconfig');
+    const editorTemplateSrc = path.join(DEFAULT_TEMPLATES_OUT, 'DefaultTemplate.editorconfig');
     assert.ok(fs.existsSync(editorTemplateSrc), `前置失效：运行时模板缺失 ${editorTemplateSrc}`);
 
     await vscode.commands.executeCommand('vssm-tool.initProject.cnb');
@@ -173,7 +171,7 @@ suite('initProject 命令（cnb）', () => {
     // 特殊目标：.editorconfig / README.md 来自映射表指定的 DefaultTemplate
     assert.strictEqual(
       readFixture('.editorconfig'),
-      fs.readFileSync(path.join(SRC_DIR, 'DefaultTemplate.editorconfig'), 'utf-8'),
+      fs.readFileSync(path.join(DEFAULT_TEMPLATES_SRC, 'DefaultTemplate.editorconfig'), 'utf-8'),
       '.editorconfig 应来自 DefaultTemplate.editorconfig'
     );
     assert.match(readFixture('README.md'), /^## README/, 'README.md 应来自 DefaultTemplate.README.md');
@@ -184,7 +182,15 @@ suite('initProject 命令（npm-package）', () => {
   setup(() => {
     ensureRuntimeResources();
     // 清理 npm 模板的全部目标（含 src / scripts 目录树）
-    cleanFixture('package.json', 'tsconfig.json', '.prettierrc', '.prettierignore', 'eslint.config.mjs', 'src', 'scripts');
+    cleanFixture(
+      'package.json',
+      'tsconfig.json',
+      '.prettierrc',
+      '.prettierignore',
+      'eslint.config.mjs',
+      'src',
+      'scripts'
+    );
   });
 
   test('初始化 ESM npm 包工程模板', async function () {

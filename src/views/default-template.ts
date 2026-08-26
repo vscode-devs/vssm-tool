@@ -20,7 +20,7 @@ interface TemplateEntry {
 /**
  * @class DefaultTemplateProvider
  * @brief 默认模板提供者，实现 SnapshottableProvider 供 chat webview 消费
- * @details 扫描注入的模板目录下以 DefaultTemplate 开头的文件（postbuild 会把它们拷进 out/），
+ * @details 扫描注入的模板目录下以 DefaultTemplate 开头的文件（postbuild 会把 src/template 树拷进 out/template），
  *          快照为单层 SnapNode[]，点击节点打开对应文件。
  */
 export class DefaultTemplateProvider implements SnapshottableProvider {
@@ -117,7 +117,7 @@ export class DefaultTemplateProvider implements SnapshottableProvider {
  *          模板目录在注册处经 context.asAbsolutePath 解析后注入，provider 不感知布局。
  */
 export function registerDefaultTemplateView(context: vscode.ExtensionContext): string {
-  const templateProvider = new DefaultTemplateProvider(context.asAbsolutePath('out'));
+  const templateProvider = new DefaultTemplateProvider(context.asAbsolutePath(path.join('out', 'template', 'default')));
 
   // 注册打开模板文件命令（参数改为 filePath 字符串，由 webview nodeCommand 触发）
   vscode.commands.registerCommand('vssm-tool-default-template.openTemplate', (filePath: string) =>

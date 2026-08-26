@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run compile        # tsc compilation
 npm run watch          # tsc watch mode (dev)
-npm run postbuild      # copy DefaultTemplate.* and src/template/ into out/ (required after compile)
+npm run postbuild      # copy src/template/ into out/template (required after compile)
 npm run lint           # eslint src
 npm run format:check   # prettier check
 npm run format:fix     # prettier fix
@@ -29,11 +29,11 @@ npm run vsix:build     # package .vsix with vsce
 - **`src/views/`** — Sidebar view data sources + the chat webview host. Most files implement the `SnapshottableProvider` contract (`getSnapshot()` / optional `applyAction()` / `refresh()`) defined in `registry.ts`, so the chat webview can render the dependency explorer, config viewer, command list, template viewer, VS Code settings viewer, and a demo CRUD tree. `chat-webview.ts` is the `WebviewViewProvider` that hosts the React UI built by `webview-ui/`.
 - **`src/language-features/`** — Document providers: `packageLinkProvider.ts` makes dependency names in package.json clickable to open node_modules; `markdownHover.ts` is currently disabled.
 - **`src/helpers/utils.ts`** — Shared output channel ("VSSM-Tool") with logging that auto-includes caller file:line from stack traces.
-- **`src/template/`** — Static scaffolding templates (`c-vscode/`, `cnb/`) copied into user workspaces by `initProject.ts`.
+- **`src/template/`** — Static scaffolding templates (`c-vscode/`, `cnb/`, `npm-package/`) copied into user workspaces by `initProject.ts`; shared default configs live in `default/DefaultTemplate.*`.
 
 ### Build-time Template Copy
 
-Default templates (`src/DefaultTemplate.*`) and `src/template/` must be copied into `out/` after compilation. This is handled by `npm run postbuild` using `shx`. The `vscode:prepublish` script chains compile + postbuild.
+`src/template/` must be copied into `out/template/` after compilation (shared `default/DefaultTemplate.*` included). This is handled by `npm run postbuild` using `shx`. The `vscode:prepublish` script chains compile + postbuild.
 
 ## Code Conventions
 

@@ -36,9 +36,9 @@ export const projectTypes = [
  *          - README.md：从扩展内置 DefaultTemplate.README.md 拷贝。
  */
 const cVscodeSpecialTargets: Record<string, string> = {
-  '.clang-format': 'DefaultTemplate.clang-format',
+  '.clang-format': path.join('template', 'default', 'DefaultTemplate.clang-format'),
   '.gitignore': path.join('template', 'c-vscode', 'C.gitignore'),
-  'README.md': 'DefaultTemplate.README.md'
+  'README.md': path.join('template', 'default', 'DefaultTemplate.README.md')
 };
 
 /**
@@ -47,8 +47,8 @@ const cVscodeSpecialTargets: Record<string, string> = {
  *          README.md 从扩展内置的 DefaultTemplate.README.md 拷贝。
  */
 const cnbSpecialTargets: Record<string, string> = {
-  '.editorconfig': 'DefaultTemplate.editorconfig',
-  'README.md': 'DefaultTemplate.README.md'
+  '.editorconfig': path.join('template', 'default', 'DefaultTemplate.editorconfig'),
+  'README.md': path.join('template', 'default', 'DefaultTemplate.README.md')
 };
 
 /**

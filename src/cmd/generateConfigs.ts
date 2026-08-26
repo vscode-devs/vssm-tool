@@ -133,7 +133,7 @@ async function generateConfig(uri: Uri, config: GenerateCommand, defaultTemplate
 export function registerGenerateConfigCommand(context: vscode.ExtensionContext, config: GenerateCommand): string {
   const commandName = config.commandName;
   // 在注册时把内置模板相对路径解析为绝对路径并注入
-  // （postbuild 将 DefaultTemplate.* 拷贝到 out/，故以 out/ 为资源根；config.defaultTemplatePath 保持相对语义）
+  // （postbuild 将 src/template 树拷贝到 out/template，故以 out/ 为资源根；config.defaultTemplatePath 保持相对语义）
   const defaultTemplateAbsPath = context.asAbsolutePath(path.join('out', config.defaultTemplatePath));
   // 创建命令处理器（返回 Promise：让 executeCommand 可等待生成完成）
   const disposable = vscode.commands.registerCommand(commandName, (uri: Uri) =>
@@ -150,7 +150,7 @@ export const GenerateClangFormatCommand: GenerateCommand = {
   commandName: 'vssm-tool.generateClangFormat',
   menuTitle: 'Generate .clang-format',
   templateName: 'ClangFormat',
-  defaultTemplatePath: 'DefaultTemplate.clang-format'
+  defaultTemplatePath: path.join('template', 'default', 'DefaultTemplate.clang-format')
 };
 
 // 预定义的工作区配置文件生成配置
@@ -164,7 +164,7 @@ export const GenerateWorkspaceConfigCommand: GenerateCommand = {
   commandName: 'vssm-tool.generateWorkspaceConfig',
   menuTitle: 'Generate .code-workspace',
   templateName: 'WorkspaceConfig',
-  defaultTemplatePath: 'DefaultTemplate.code-workspace'
+  defaultTemplatePath: path.join('template', 'default', 'DefaultTemplate.code-workspace')
 };
 
 // 预定义的.editorconfig文件生成配置
@@ -173,7 +173,7 @@ export const GenerateEditorConfigCommand: GenerateCommand = {
   commandName: 'vssm-tool.generateEditorConfig',
   menuTitle: 'Generate .editorconfig',
   templateName: 'EditorConfig',
-  defaultTemplatePath: 'DefaultTemplate.editorconfig',
+  defaultTemplatePath: path.join('template', 'default', 'DefaultTemplate.editorconfig'),
   generateAutoContent: async (uri: Uri) => {
     // 获取编辑器和工作区设置
     const editor = workspace.getConfiguration('editor', uri);

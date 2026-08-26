@@ -254,7 +254,7 @@
     "build:webview": "npm run build -w webview-ui",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "postbuild": "shx mkdir -p out && shx cp -f src/DefaultTemplate.* out/ && shx rm -rf out/template && shx cp -rf src/template out/template",
+    "postbuild": "shx mkdir -p out && shx rm -rf out/template && shx cp -rf src/template out/template",
     "clean": "shx rm -rf out",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",

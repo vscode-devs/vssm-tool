@@ -80,7 +80,7 @@ async function initProjectFromTemplate(
  * @return 返回主命令的命令ID字符串"vssm-tool.initProject"
  */
 export function registerInitProjectCommand(context: vscode.ExtensionContext): string {
-  // 运行时资源根：postbuild 将 DefaultTemplate.* 与 src/template 拷贝到 out/，
+  // 运行时资源根：postbuild 将 src/template 树拷贝到 out/template，
   // 开发态与安装态一致，故统一以 out/ 为资源根解析（避免模块内部反推位置）
   const resourceRoot = context.asAbsolutePath('out');
 

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
+import { withFileRetry } from '../helpers/utils';
 
 /**
  * @file 命令级集成测试：在真实 Extension Host 中执行命令，
@@ -31,10 +32,10 @@ function ensureRuntimeResources(): void {
   }
 }
 
-/** @brief 删除夹具内指定相对路径的产物（存在才删） */
+/** @brief 删除夹具内指定相对路径的产物（存在才删；带重试以规避 Windows 删除挂起句柄） */
 function cleanFixture(...rel: string[]): void {
   for (const p of rel) {
-    fs.rmSync(path.join(FIXTURE_ROOT, p), { recursive: true, force: true });
+    withFileRetry(() => fs.rmSync(path.join(FIXTURE_ROOT, p), { recursive: true, force: true }));
   }
 }
 
@@ -70,6 +71,11 @@ suite('addToIgnore 命令', () => {
   test('可写入 .prettierignore', async () => {
     await vscode.commands.executeCommand('vssm-tool.addToPrettierIgnore', target);
     assert.ok(readFixture('.prettierignore').includes('sample.txt'));
+  });
+
+  test('可写入 .vscodeignore（工厂函数第三配置）', async () => {
+    await vscode.commands.executeCommand('vssm-tool.addToVScodeIgnore', target);
+    assert.ok(readFixture('.vscodeignore').includes('sample.txt'));
   });
 });
 

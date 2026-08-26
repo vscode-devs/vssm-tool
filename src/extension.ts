@@ -26,7 +26,7 @@ import { registerCommandsView } from './views/commands';
 import { registerFixedDataProvider } from './views/fixed-data';
 import { registerVSCodeSettingsView } from './views/vscode-settings';
 import { registerChatWebviewView } from './views/chat-webview';
-import { registerInitProjectCommand } from './cmd/initProject';
+import { registerInitProjectCommand } from './cmd/init-project';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed

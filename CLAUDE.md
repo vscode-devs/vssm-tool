@@ -43,6 +43,5 @@ npm run vsix:build     # package .vsix with vsce
 
 ## CI/CD
 
-- Pushing to master with `[publish]` in the commit message triggers VS Code Marketplace publishing (`.github/workflows/npm-publish.yaml`)
-- A companion workflow auto-creates GitHub Releases with version validation
+- Pushing to master with `[publish]` in the commit message triggers the all-in-one pipeline (`.github/workflows/publish-extension.yaml`): package VSIX → publish to VS Code Marketplace (`vsce publish --packagePath`) → create `v<version>` tag + GitHub Release attaching the VSIX
 - `.cnb.yml` handles branch sync and cloud dev environment setup

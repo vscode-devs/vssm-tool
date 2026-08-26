@@ -65,9 +65,10 @@ async function addToIgnore(uri: Uri, ignoreFileName: string) {
  */
 export function registerAddToIgnoreCommand(context: vscode.ExtensionContext, config: IgnoreCommand): string {
   const commandName = config.commandName;
-  const disposable = vscode.commands.registerCommand(commandName, (uri: Uri) => {
-    addToIgnore(uri, config.fileName);
-  });
+  const disposable = vscode.commands.registerCommand(commandName, (uri: Uri) =>
+    // 返回 Promise：让 executeCommand 可等待写入完成（测试与编程式调用依赖此语义）
+    addToIgnore(uri, config.fileName)
+  );
   context.subscriptions.push(disposable);
   return commandName;
 }

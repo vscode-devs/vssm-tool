@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Uri, window, workspace } from 'vscode';
 import { readFile as _readFile } from 'fs';
+import * as path from 'path';
 import { promisify } from 'util';
 
 const readFile = promisify(_readFile); // 将回调式文件读取转换为Promise形式
@@ -131,12 +132,13 @@ async function generateConfig(uri: Uri, config: GenerateCommand, defaultTemplate
  */
 export function registerGenerateConfigCommand(context: vscode.ExtensionContext, config: GenerateCommand): string {
   const commandName = config.commandName;
-  // 在注册时把内置模板相对路径解析为绝对路径并注入（config.defaultTemplatePath 保持相对语义）
-  const defaultTemplateAbsPath = context.asAbsolutePath(config.defaultTemplatePath);
-  // 创建命令处理器
-  const disposable = vscode.commands.registerCommand(commandName, (uri: Uri) => {
-    generateConfig(uri, config, defaultTemplateAbsPath); // 调用核心生成函数
-  });
+  // 在注册时把内置模板相对路径解析为绝对路径并注入
+  // （postbuild 将 DefaultTemplate.* 拷贝到 out/，故以 out/ 为资源根；config.defaultTemplatePath 保持相对语义）
+  const defaultTemplateAbsPath = context.asAbsolutePath(path.join('out', config.defaultTemplatePath));
+  // 创建命令处理器（返回 Promise：让 executeCommand 可等待生成完成）
+  const disposable = vscode.commands.registerCommand(commandName, (uri: Uri) =>
+    generateConfig(uri, config, defaultTemplateAbsPath)
+  );
   // 注册命令到扩展上下文
   context.subscriptions.push(disposable);
   return commandName;

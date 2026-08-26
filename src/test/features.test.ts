@@ -140,3 +140,36 @@ suite('initProject 命令（c-vscode）', () => {
     assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, '.vscode', 'settings.json')));
   });
 });
+
+suite('initProject 命令（cnb）', () => {
+  setup(() => {
+    ensureRuntimeResources();
+    // 清理 CNB 模板的全部目标（含目录树），保证用例从干净状态开始
+    cleanFixture('.editorconfig', 'README.md', '.cnb.yml', '.cnb', 'LICENSE');
+  });
+
+  test('初始化 CNB 工程模板（含特殊目标映射）', async function () {
+    this.timeout(30000);
+    // 前置校验：与 c-vscode 用例同理，区分环境问题与命令逻辑错误
+    const editorTemplateSrc = path.join(RESOURCE_ROOT, 'DefaultTemplate.editorconfig');
+    assert.ok(fs.existsSync(editorTemplateSrc), `前置失效：运行时模板缺失 ${editorTemplateSrc}`);
+
+    await vscode.commands.executeCommand('vssm-tool.initProject.cnb');
+
+    // 常规同名拷贝：根文件 + .cnb 目录树（含子目录 workflows）
+    assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, '.cnb.yml')), '缺少 .cnb.yml');
+    assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'LICENSE')), '缺少 LICENSE');
+    assert.ok(
+      fs.existsSync(path.join(FIXTURE_ROOT, '.cnb', 'workflows', 'cnb-build-image.yml')),
+      '缺少 .cnb/workflows 目录树拷贝'
+    );
+
+    // 特殊目标：.editorconfig / README.md 来自映射表指定的 DefaultTemplate
+    assert.strictEqual(
+      readFixture('.editorconfig'),
+      fs.readFileSync(path.join(SRC_DIR, 'DefaultTemplate.editorconfig'), 'utf-8'),
+      '.editorconfig 应来自 DefaultTemplate.editorconfig'
+    );
+    assert.match(readFixture('README.md'), /^## README/, 'README.md 应来自 DefaultTemplate.README.md');
+  });
+});

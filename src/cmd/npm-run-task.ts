@@ -63,9 +63,11 @@ async function getTaskSource(): Promise<TaskSource> {
 /**
  * @brief 从package.json获取npm脚本
  * @async
+ * @param workspaceFolders 工作区文件夹列表（取第一个的根路径）
  * @returns {Promise<vscode.QuickPickItem[]>} 返回脚本选择项数组
+ * @throws {Error} 当 package.json 不存在时抛出
  */
-async function getPackageJsonScripts(
+export async function getPackageJsonScripts(
   workspaceFolders: readonly vscode.WorkspaceFolder[]
 ): Promise<vscode.QuickPickItem[]> {
   // 构建package.json完整路径
@@ -92,9 +94,13 @@ async function getPackageJsonScripts(
 /**
  * @brief 从tasks.json获取npm任务
  * @async
+ * @param workspaceFolders 工作区文件夹列表（取第一个的根路径）
  * @returns {Promise<vscode.QuickPickItem[]>} 返回任务选择项数组
+ * @throws {Error} 当 tasks.json 不存在时抛出
  */
-async function getTasksJsonTasks(workspaceFolders: readonly vscode.WorkspaceFolder[]): Promise<vscode.QuickPickItem[]> {
+export async function getTasksJsonTasks(
+  workspaceFolders: readonly vscode.WorkspaceFolder[]
+): Promise<vscode.QuickPickItem[]> {
   // 构建tasks.json完整路径
   const tasksJsonPath = path.join(workspaceFolders[0].uri.fsPath, '.vscode', 'tasks.json');
   // 检查文件是否存在

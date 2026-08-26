@@ -1,18 +1,17 @@
 import * as vscode from 'vscode';
 
 /**
- * @brief 获取考虑tab的光标列位置
- * @param editor 文本编辑器实例
- * @param position 光标位置
+ * @brief 计算考虑tab的光标列位置（纯函数，便于单元测试）
+ * @param lineText 光标所在行的文本
+ * @param character 光标的原始字符偏移（0-based）
+ * @param tabSize 制表符宽度
  * @returns 计算后的列位置(考虑tab)
  */
-function getAdjustedColumn(editor: vscode.TextEditor, position: vscode.Position): number {
-  const line = editor.document.lineAt(position.line);
+export function computeAdjustedColumn(lineText: string, character: number, tabSize: number): number {
   let column = 0;
 
-  for (let i = 0; i < position.character; i++) {
-    if (line.text.charAt(i) === '\t') {
-      const tabSize = (editor.options.tabSize as number) || 4;
+  for (let i = 0; i < character; i++) {
+    if (lineText.charAt(i) === '\t') {
       column += tabSize - (column % tabSize);
     } else {
       column++;
@@ -20,6 +19,18 @@ function getAdjustedColumn(editor: vscode.TextEditor, position: vscode.Position)
   }
 
   return column;
+}
+
+/**
+ * @brief 获取考虑tab的光标列位置
+ * @param editor 文本编辑器实例
+ * @param position 光标位置
+ * @returns 计算后的列位置(考虑tab)
+ */
+function getAdjustedColumn(editor: vscode.TextEditor, position: vscode.Position): number {
+  const line = editor.document.lineAt(position.line);
+  const tabSize = (editor.options.tabSize as number) || 4;
+  return computeAdjustedColumn(line.text, position.character, tabSize);
 }
 
 /**

@@ -184,7 +184,7 @@ suite('initProject 命令（npm-package）', () => {
   setup(() => {
     ensureRuntimeResources();
     // 清理 npm 模板的全部目标（含 src / scripts 目录树）
-    cleanFixture('package.json', 'tsconfig.json', '.prettierrc', 'eslint.config.mjs', 'src', 'scripts');
+    cleanFixture('package.json', 'tsconfig.json', '.prettierrc', '.prettierignore', 'eslint.config.mjs', 'src', 'scripts');
   });
 
   test('初始化 ESM npm 包工程模板', async function () {
@@ -210,6 +210,11 @@ suite('initProject 命令（npm-package）', () => {
 
     // 工具链配置文件
     assert.ok(JSON.parse(readFixture('.prettierrc')), '.prettierrc 应为合法 JSON');
+    assert.strictEqual(
+      readFixture('.prettierignore'),
+      fs.readFileSync(path.join(SRC_DIR, 'template', 'npm-package', '.prettierignore'), 'utf-8'),
+      '.prettierignore 应来自 npm-package 模板'
+    );
     assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'eslint.config.mjs')), '缺少 eslint 配置');
 
     // 源码入口与工具脚本

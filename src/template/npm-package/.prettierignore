@@ -1,0 +1,38 @@
+# 依赖与锁文件
+node_modules
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
+
+# 构建产物
+dist
+out
+build
+lib
+esm
+coverage
+*.tsbuildinfo
+
+# 日志与缓存
+*.log
+logs
+.cache
+.parcel-cache
+.eslintcache
+
+# 环境变量文件（保留原格式）
+.env
+.env.*
+!.env.example
+
+# 编辑器与系统文件
+.vscode
+.idea
+.DS_Store
+
+# 文档与资源（不强制排版）
+CHANGELOG.md
+LICENSE
+*.min.js
+*.min.css

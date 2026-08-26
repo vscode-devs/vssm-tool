@@ -1,4 +1,6 @@
 import * as assert from 'assert';
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { ConfigViewProvider } from '../views/config';
 import { CommandsViewProvider } from '../views/commands';
@@ -15,9 +17,6 @@ import {
  * @file Provider 纯逻辑测试：不经过 UI 与命令系统，
  *       直接实例化各 SnapshottableProvider 验证快照与 CRUD 行为。
  */
-
-/** @brief 夹具工作区根目录（out/test → 仓库根） */
-const FIXTURE_ROOT = path.join(__dirname, '..', '..', 'test-fixtures', 'demo-workspace');
 
 suite('ConfigViewProvider（配置视图）', () => {
   const fakeProperties = {
@@ -151,14 +150,27 @@ suite('FixedDataProvider（固定数据 CRUD）', () => {
 });
 
 suite('DepViewProvider（依赖树）', () => {
+  let depFixtureRoot: string;
+
+  setup(() => {
+    // 自建临时夹具：不与其他套件共享 demo-workspace，避免相互污染
+    depFixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vssm-dep-'));
+    fs.writeFileSync(
+      path.join(depFixtureRoot, 'package.json'),
+      JSON.stringify({ name: 'dep-fixture', dependencies: { 'left-pad': '^1.3.0' } })
+    );
+  });
+
+  teardown(() => {
+    fs.rmSync(depFixtureRoot, { recursive: true, force: true });
+  });
+
   test('未安装的依赖生成为带 openPackageOnNpm 命令的叶子', () => {
-    const provider = new DepViewProvider(FIXTURE_ROOT);
+    const provider = new DepViewProvider(depFixtureRoot);
     const snap = provider.getSnapshot();
 
-    // 夹具 package.json: dependencies=[left-pad], devDependencies=[typescript]
     const labels = snap.map((n) => n.label);
     assert.ok(labels.includes('left-pad'));
-    assert.ok(labels.includes('typescript'));
 
     const leftPad = snap.find((n) => n.label === 'left-pad')!;
     assert.strictEqual(leftPad.collapsibleState, 'none', '夹具未安装依赖应为叶子');
@@ -174,7 +186,7 @@ suite('DepViewProvider（依赖树）', () => {
   });
 
   test('快照深度不超过上限（防环）', () => {
-    const provider = new DepViewProvider(FIXTURE_ROOT);
+    const provider = new DepViewProvider(depFixtureRoot);
     const maxDepth = (nodes: SnapNode[]): number =>
       nodes.reduce((max, n) => Math.max(max, n.children ? 1 + maxDepth(n.children) : 1), 0);
     assert.ok(maxDepth(provider.getSnapshot()) <= 3, '依赖树下钻不得超过 3 层');

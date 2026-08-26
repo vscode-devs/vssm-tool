@@ -18,5 +18,4 @@ webview-ui/vite.config.js.map
 
 # 测试夹具仅入库静态种子文件，运行期产物不入库
 test-fixtures/demo-workspace/*
-!test-fixtures/demo-workspace/package.json
 !test-fixtures/demo-workspace/sample.txt

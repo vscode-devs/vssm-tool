@@ -5,6 +5,12 @@ import * as os from 'os';
 import * as path from 'path';
 import { computeAdjustedColumn } from '../cmd/cursor-position';
 import { getPackageJsonScripts, getTasksJsonTasks } from '../cmd/npm-run-task';
+import {
+  applyLatestVersions,
+  mergePackageJsonTemplate,
+  pickLatestWithinMajor,
+  refreshDevDependencyVersions
+} from '../helpers/npmRegistry';
 
 /**
  * @file 命令纯逻辑单元测试：不依赖打开的工作区与 UI，
@@ -117,5 +123,176 @@ suite('getTasksJsonTasks（tasks.json 任务读取）', () => {
 
   test('tasks.json 缺失时抛出明确错误', async () => {
     await assert.rejects(getTasksJsonTasks([fakeFolder(tmpRoot)]), /tasks\.json not found/);
+  });
+});
+
+suite('refreshDevDependencyVersions（依赖版本刷新）', () => {
+  let tmpRoot: string;
+  let pkgPath: string;
+
+  const BASE_MANIFEST = {
+    name: 'x',
+    devDependencies: { typescript: '^5.0.0', eslint: '^9.0.0', 'left-pad': '^1.3.0' }
+  };
+
+  setup(() => {
+    tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vssm-registry-'));
+    pkgPath = path.join(tmpRoot, 'package.json');
+  });
+
+  teardown(() => {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+  });
+
+  function writeManifest(): void {
+    fs.writeFileSync(pkgPath, JSON.stringify(BASE_MANIFEST));
+  }
+
+  test('全部查询成功：以 caret 范围写回最新版本', async () => {
+    writeManifest();
+    const fetcher = async (name: string) => ({ typescript: '7.0.2', eslint: '10.9.1', 'left-pad': '1.3.0' })[name];
+
+    const { updated, total } = await refreshDevDependencyVersions(pkgPath, fetcher);
+
+    assert.strictEqual(total, 3);
+    assert.strictEqual(updated, 3);
+    const manifest = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    assert.deepStrictEqual(manifest.devDependencies, {
+      typescript: '^7.0.2',
+      eslint: '^10.9.1',
+      'left-pad': '^1.3.0'
+    });
+    // name 等其他字段不受影响
+    assert.strictEqual(manifest.name, 'x');
+  });
+
+  test('查询失败：保留原版本范围且文件不被改写', async () => {
+    writeManifest();
+    const before = fs.readFileSync(pkgPath, 'utf-8');
+    const fetcher = async () => undefined;
+
+    const { updated, total } = await refreshDevDependencyVersions(pkgPath, fetcher);
+
+    assert.strictEqual(total, 3);
+    assert.strictEqual(updated, 0);
+    assert.strictEqual(fs.readFileSync(pkgPath, 'utf-8'), before, '无更新时文件应保持原样');
+  });
+
+  test('部分失败：仅刷新成功项', async () => {
+    writeManifest();
+    const fetcher = async (name: string) => (name === 'typescript' ? '7.0.2' : undefined);
+
+    const { updated, total } = await refreshDevDependencyVersions(pkgPath, fetcher);
+
+    assert.strictEqual(updated, 1);
+    const manifest = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    assert.strictEqual(manifest.devDependencies.typescript, '^7.0.2');
+    assert.strictEqual(manifest.devDependencies.eslint, '^9.0.0');
+  });
+
+  test('applyLatestVersions：不在 devDependencies 中的包名被忽略', () => {
+    const manifest = { devDependencies: { a: '^1.0.0' } };
+    const updated = applyLatestVersions(manifest, { a: '2.0.0', unknown: '3.0.0' });
+    assert.strictEqual(updated, 1);
+    assert.strictEqual(manifest.devDependencies.a, '^2.0.0');
+    assert.ok(!('unknown' in manifest.devDependencies));
+  });
+});
+
+suite('mergePackageJsonTemplate（package.json 字段合并）', () => {
+  let tmpRoot: string;
+  let templatePath: string;
+  let targetPath: string;
+
+  const TEMPLATE_MANIFEST = {
+    name: '@smai-kit/npm-package',
+    version: '0.0.0',
+    type: 'module',
+    main: 'out/index.js',
+    license: 'MIT',
+    scripts: { compile: 'tsc -p ./', 'format:check': 'prettier src --check' },
+    devDependencies: { typescript: '^7.0.2', eslint: '^10.9.1' }
+  };
+
+  setup(() => {
+    tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vssm-merge-'));
+    templatePath = path.join(tmpRoot, 'template.package.json');
+    targetPath = path.join(tmpRoot, 'package.json');
+    fs.writeFileSync(templatePath, JSON.stringify(TEMPLATE_MANIFEST));
+  });
+
+  teardown(() => {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+  });
+
+  test('缺失字段补入，已有字段保持用户原值', () => {
+    // 用户已有 name/version/test 脚本/自己的依赖版本
+    fs.writeFileSync(
+      targetPath,
+      JSON.stringify({
+        name: '@smai-kit/my-pkg',
+        version: '3.1.4',
+        description: 'mine',
+        scripts: { test: 'node --test', compile: '自定义编译命令' },
+        devDependencies: { typescript: '^4.9.5' }
+      })
+    );
+
+    const r = mergePackageJsonTemplate(templatePath, targetPath);
+    const merged = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+
+    // 已有：保持不变
+    assert.strictEqual(merged.name, '@smai-kit/my-pkg');
+    assert.strictEqual(merged.version, '3.1.4');
+    assert.strictEqual(merged.description, 'mine');
+    assert.strictEqual(merged.scripts.test, 'node --test');
+    assert.strictEqual(merged.scripts.compile, '自定义编译命令', '已有脚本不应被模板覆盖');
+    assert.strictEqual(merged.devDependencies.typescript, '^4.9.5', '已有依赖版本不应被覆盖');
+
+    // 缺失：补入
+    assert.strictEqual(r.addedTopLevelFields.sort().join(','), 'license,main,type');
+    assert.deepStrictEqual(r.addedScripts.sort(), ['format:check']);
+    assert.deepStrictEqual(r.addedDevDependencies.sort(), ['eslint']);
+    assert.strictEqual(merged.type, 'module');
+    assert.strictEqual(merged.main, 'out/index.js');
+    assert.strictEqual(merged.license, 'MIT');
+    assert.strictEqual(merged.scripts['format:check'], 'prettier src --check');
+    assert.strictEqual(merged.devDependencies.eslint, '^10.9.1');
+    assert.ok(r.changed);
+  });
+
+  test('目标与模板完全一致时 changed=false 且不写文件', () => {
+    fs.writeFileSync(targetPath, JSON.stringify(TEMPLATE_MANIFEST));
+    const before = fs.readFileSync(targetPath, 'utf-8');
+
+    const r = mergePackageJsonTemplate(templatePath, targetPath);
+
+    assert.ok(!r.changed);
+    assert.strictEqual(fs.readFileSync(targetPath, 'utf-8'), before);
+  });
+});
+
+suite('pickLatestWithinMajor（大版本内最新版挑选）', () => {
+  const versions = {
+    '5.9.3': {},
+    '5.9.2': {},
+    '5.10.0-beta.1': {},
+    '7.0.2': {},
+    '4.9.5': {}
+  };
+
+  test('返回指定大版本的最新稳定版', () => {
+    assert.strictEqual(pickLatestWithinMajor(versions, 5), '5.9.3');
+    assert.strictEqual(pickLatestWithinMajor(versions, 7), '7.0.2');
+    assert.strictEqual(pickLatestWithinMajor(versions, 4), '4.9.5');
+  });
+
+  test('预发布版本不参与挑选', () => {
+    const onlyPrerelease = { '6.1.0-next.1': {}, '6.0.0': {} };
+    assert.strictEqual(pickLatestWithinMajor(onlyPrerelease, 6), '6.0.0');
+  });
+
+  test('大版本不存在时返回 undefined', () => {
+    assert.strictEqual(pickLatestWithinMajor(versions, 3), undefined);
   });
 });

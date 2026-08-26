@@ -179,3 +179,72 @@ suite('initProject 命令（cnb）', () => {
     assert.match(readFixture('README.md'), /^## README/, 'README.md 应来自 DefaultTemplate.README.md');
   });
 });
+
+suite('initProject 命令（npm-package）', () => {
+  setup(() => {
+    ensureRuntimeResources();
+    // 清理 npm 模板的全部目标（含 src / scripts 目录树）
+    cleanFixture('package.json', 'tsconfig.json', '.prettierrc', 'eslint.config.mjs', 'src', 'scripts');
+  });
+
+  test('初始化 ESM npm 包工程模板', async function () {
+    this.timeout(30000);
+    await vscode.commands.executeCommand('vssm-tool.initProject.npm-package');
+
+    // package.json：ESM 标识 + 产物入口指向 out/ + 脚本齐全
+    const pkg = JSON.parse(readFixture('package.json'));
+    assert.strictEqual(pkg.name, '@smai-kit/npm-package', '应使用 @smai-kit 范围名');
+    assert.strictEqual(pkg.version, '0.0.0', '初始版本应为 0.0.0');
+    assert.strictEqual(pkg.license, 'MIT');
+    assert.strictEqual(pkg.type, 'module', '应为 ESM 项目');
+    assert.strictEqual(pkg.main, 'out/index.js', '入口应指向 out 目录');
+    assert.ok(pkg.scripts?.compile, '缺少 compile 脚本');
+    assert.ok(pkg.scripts?.lint, '缺少 lint 脚本');
+    assert.ok(pkg.scripts['git-sync-force'], '缺少 git-sync-force 脚本');
+    assert.strictEqual(pkg.scripts['format:check'], 'prettier src --check', 'format 应只关注 src 目录');
+    assert.strictEqual(pkg.scripts['format:fix'], 'prettier src --write');
+
+    // tsconfig：产物输出目录必须为 out/
+    const tsconfig = JSON.parse(readFixture('tsconfig.json'));
+    assert.strictEqual(tsconfig.compilerOptions.outDir, 'out');
+
+    // 工具链配置文件
+    assert.ok(JSON.parse(readFixture('.prettierrc')), '.prettierrc 应为合法 JSON');
+    assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'eslint.config.mjs')), '缺少 eslint 配置');
+
+    // 源码入口与工具脚本
+    assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'src', 'index.ts')), '缺少 src/index.ts');
+    assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'scripts', 'sync-force.mjs')), '缺少 scripts/sync-force.mjs');
+  });
+
+  test('工作区已有 package.json 时执行字段级合并（缺则补、有不覆）', async function () {
+    this.timeout(30000);
+
+    // 模拟用户已有项目：自己的名称/版本/脚本/依赖
+    const userManifest = {
+      name: '@smai-kit/my-lib',
+      version: '2.3.3',
+      scripts: { test: 'node --test', compile: '用户自定义编译' },
+      devDependencies: { typescript: '^4.9.5' }
+    };
+    fs.writeFileSync(path.join(FIXTURE_ROOT, 'package.json'), JSON.stringify(userManifest));
+
+    await vscode.commands.executeCommand('vssm-tool.initProject.npm-package');
+
+    const merged = JSON.parse(readFixture('package.json'));
+    // 已有：保持不变（含依赖版本）
+    assert.strictEqual(merged.name, '@smai-kit/my-lib');
+    assert.strictEqual(merged.version, '2.3.3');
+    assert.strictEqual(merged.scripts.test, 'node --test');
+    assert.strictEqual(merged.scripts.compile, '用户自定义编译');
+    assert.match(merged.devDependencies.typescript, /\^?4\.9\.5/, '用户已有依赖不应被改写');
+    // 缺失：补入
+    assert.strictEqual(merged.type, 'module', '应补入 ESM 标识');
+    assert.strictEqual(merged.scripts['format:check'], 'prettier src --check');
+    assert.ok(merged.devDependencies.eslint, '应补入模板缺失的 eslint 依赖');
+
+    // 其他模板文件正常创建
+    assert.ok(fs.existsSync(path.join(FIXTURE_ROOT, 'src', 'index.ts')));
+    assert.strictEqual(JSON.parse(readFixture('tsconfig.json')).compilerOptions.outDir, 'out');
+  });
+});

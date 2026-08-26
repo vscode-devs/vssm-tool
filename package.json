@@ -72,6 +72,10 @@
       {
         "command": "vssm-tool.initProject.cnb",
         "title": "CNB"
+      },
+      {
+        "command": "vssm-tool.initProject.npm-package",
+        "title": "NPM Package"
       }
     ],
     "configuration": {
@@ -209,6 +213,10 @@
         {
           "command": "vssm-tool.initProject.cnb",
           "group": "1_types@2"
+        },
+        {
+          "command": "vssm-tool.initProject.npm-package",
+          "group": "1_types@3"
         }
       ]
     },

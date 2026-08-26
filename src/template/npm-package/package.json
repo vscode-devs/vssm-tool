@@ -1,0 +1,39 @@
+{
+  "name": "@smai-kit/npm-package",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "type": "module",
+  "main": "out/index.js",
+  "types": "./out/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./out/index.d.ts",
+      "import": "./out/index.js"
+    }
+  },
+  "files": [
+    "out"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src",
+    "format:check": "prettier src --check",
+    "format:fix": "prettier src --write",
+    "git-sync-force": "node scripts/sync-force.mjs",
+    "prepublishOnly": "npm run compile && npm run format:check && npm run lint"
+  },
+  "devDependencies": {
+    "@types/node": "^26.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.68.0",
+    "@typescript-eslint/parser": "^8.68.0",
+    "eslint": "^10.9.1",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3"
+  }
+}

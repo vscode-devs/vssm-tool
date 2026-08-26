@@ -1,0 +1,12 @@
+{
+  "name": "demo-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "vssm-tool 集成测试夹具工作区",
+  "dependencies": {
+    "left-pad": "^1.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

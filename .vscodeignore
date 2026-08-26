@@ -20,6 +20,9 @@ docs
 .cnb.yml
 CLAUDE.md
 
+# 测试夹具与测试产物不进安装包（out/test 已单独排除）
+test-fixtures/**
+
 # webview-ui 子工程：只发布构建产物 dist/，排除源码与依赖
 webview-ui/src/**
 webview-ui/node_modules/**
